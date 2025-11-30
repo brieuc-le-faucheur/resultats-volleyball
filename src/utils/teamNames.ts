@@ -25,10 +25,3 @@ export function formatShortTeamName(name: string, maxLength = 15): string {
   // Stratégie 3 : Tronquer avec ellipse
   return name.substring(0, maxLength - 1) + '…'
 }
-
-/**
- * Retourne le nom complet (identity function pour cohérence)
- */
-export function formatFullTeamName(name: string): string {
-  return name
-}
