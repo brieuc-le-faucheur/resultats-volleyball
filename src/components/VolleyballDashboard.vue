@@ -53,11 +53,17 @@ const filteredMatches = computed(() => {
 
 const matchesByDate = computed(() => {
   const groups = {}
+  const today = new Date()
+  today.setHours(0, 0, 0, 0) // Reset time to midnight for accurate date comparison
+
   filteredMatches.value.forEach(match => {
     if (!groups[match.date]) {
+      const matchDate = new Date(match.date)
+      matchDate.setHours(0, 0, 0, 0)
+
       groups[match.date] = {
         date: match.date,
-        played: match.played,
+        isPast: matchDate < today,
         matches: []
       }
     }
@@ -68,11 +74,11 @@ const matchesByDate = computed(() => {
 })
 
 const pastMatchesByDate = computed(() => {
-  return matchesByDate.value.filter(group => group.played)
+  return matchesByDate.value.filter(group => group.isPast)
 })
 
 const upcomingMatchesByDate = computed(() => {
-  return matchesByDate.value.filter(group => !group.played).reverse()
+  return matchesByDate.value.filter(group => !group.isPast).reverse()
 })
 
 const selectedTeamStats = computed(() => {
