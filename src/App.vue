@@ -2,6 +2,7 @@
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
 import ThemeToggle from './components/ThemeToggle.vue'
+import CompetitionSelector from './components/CompetitionSelector.vue'
 
 const route = useRoute()
 const isCompactView = computed(() => route.name === 'compact')
@@ -15,9 +16,13 @@ const isCompactView = computed(() => route.name === 'compact')
           <div class="volleyball-icon">🏐</div>
           <div>
             <h1>Volleyball Dashboard</h1>
-            <p v-if="!isCompactView" class="subtitle">Résultats et classement DMA - PTBR35</p>
+            <p v-if="!isCompactView" class="subtitle">Résultats et classement</p>
           </div>
         </div>
+
+        <!-- Sélecteur de compétition (uniquement en vue complète) -->
+        <CompetitionSelector v-if="!isCompactView" />
+
         <nav class="nav-links">
           <ThemeToggle />
           <router-link to="/full" class="nav-link">Vue complète</router-link>
@@ -110,13 +115,14 @@ body {
 }
 
 .header-content {
-  max-width: 1400px;
+  max-width: 1600px;
   margin: 0 auto;
   padding: 1.5rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 2rem;
+  flex-wrap: wrap;
 }
 
 .logo-section {
@@ -220,6 +226,13 @@ body {
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 1024px) {
+  .header-content {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
 
