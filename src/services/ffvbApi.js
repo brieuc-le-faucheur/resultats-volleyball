@@ -15,7 +15,7 @@ export async function fetchFFVBData() {
       url = config.mockServerUrl
     } else {
       // Production mode: use CORS proxy to fetch from FFVB
-      url = config.corsProxy + encodeURIComponent(config.liveDataUrl)
+      url = config.corsProxy + config.liveDataUrl
     }
 
     const response = await fetch(url)
