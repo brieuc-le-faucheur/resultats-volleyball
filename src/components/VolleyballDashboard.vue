@@ -1,83 +1,25 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { fetchFFVBData } from '../services/ffvbApi.js'
+import { computed } from 'vue'
+import { useFFVBData } from '../composables/useFFVBData'
+import { useMatchFilters } from '../composables/useMatchFilters'
+import { useDateFormatting } from '../composables/useDateFormatting'
+import StandingsTable from './StandingsTable.vue'
+import MatchCard from './MatchCard.vue'
 
-const matches = ref([])
-const standings = ref([])
-const selectedTeam = ref(null)
-const loading = ref(true)
-const sortOrder = ref('desc') // 'asc' or 'desc'
+const { matches, standings, loading } = useFFVBData()
+const {
+  selectedTeam,
+  sortOrder,
+  matchesByDate,
+  selectTeam,
+  toggleSortOrder
+} = useMatchFilters(matches)
 
-// Fonction pour convertir le format de date DD/MM/YY en YYYY-MM-DD
-function parseFFVBDate(dateStr) {
-  if (!dateStr || dateStr.trim() === '') return ''
-  const [day, month, year] = dateStr.split('/')
-  return `20${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
-}
+const { formatDateFull } = useDateFormatting()
 
-onMounted(async () => {
-  loading.value = true
-  try {
-    const data = await fetchFFVBData()
-    standings.value = data.standings
-
-    // Transform matches to match the expected format
-    matches.value = data.matches.map(match => {
-      const journeeMatch = match.journee.match(/\d+/)
-      return {
-        id: match.code,
-        journee: journeeMatch ? parseInt(journeeMatch[0]) : 0,
-        date: parseFFVBDate(match.date),
-        time: match.time || '-',
-        teamA: match.homeTeam,
-        teamB: match.awayTeam,
-        scoreA: match.homeScore,
-        scoreB: match.awayScore,
-        sets: match.setScores,
-        played: match.played
-      }
-    })
-  } catch (error) {
-    console.error('Erreur lors du chargement des données FFVB:', error)
-  } finally {
-    loading.value = false
-  }
-})
-
-const filteredMatches = computed(() => {
-  if (!selectedTeam.value) return matches.value
-
-  return matches.value.filter(match =>
-    match.teamA === selectedTeam.value || match.teamB === selectedTeam.value
-  )
-})
-
-const matchesByDate = computed(() => {
-  const groups = {}
-  const today = new Date()
-  today.setHours(0, 0, 0, 0) // Reset time to midnight for accurate date comparison
-
-  filteredMatches.value.forEach(match => {
-    if (!groups[match.date]) {
-      const matchDate = new Date(match.date)
-      matchDate.setHours(0, 0, 0, 0)
-
-      groups[match.date] = {
-        date: match.date,
-        isPast: matchDate < today,
-        matches: []
-      }
-    }
-    groups[match.date].matches.push(match)
-  })
-
-  const sorted = Object.values(groups).sort((a, b) => {
-    const dateA = new Date(a.date)
-    const dateB = new Date(b.date)
-    return sortOrder.value === 'desc' ? dateB - dateA : dateA - dateB
-  })
-
-  return sorted
+const selectedTeamStats = computed(() => {
+  if (!selectedTeam.value) return null
+  return standings.value.find(s => s.team === selectedTeam.value)
 })
 
 const pastMatchesByDate = computed(() => {
@@ -88,23 +30,9 @@ const upcomingMatchesByDate = computed(() => {
   return matchesByDate.value.filter(group => !group.isPast)
 })
 
-function toggleSortOrder() {
-  sortOrder.value = sortOrder.value === 'desc' ? 'asc' : 'desc'
-}
-
-const selectedTeamStats = computed(() => {
-  if (!selectedTeam.value) return null
-  return standings.value.find(s => s.team === selectedTeam.value)
+const filteredMatches = computed(() => {
+  return matchesByDate.value.flatMap(group => group.matches)
 })
-
-function selectTeam(team) {
-  selectedTeam.value = selectedTeam.value === team ? null : team
-}
-
-function formatDate(dateStr) {
-  const date = new Date(dateStr)
-  return date.toLocaleDateString('fr-FR', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })
-}
 </script>
 
 <template>
@@ -121,48 +49,14 @@ function formatDate(dateStr) {
           <span class="title-icon">📊</span>
           Classement
         </h2>
-        <div class="standings-table-wrapper">
-          <table class="standings-table">
-            <thead>
-              <tr>
-                <th class="pos-col">#</th>
-                <th class="team-col">Équipe</th>
-                <th>J</th>
-                <th>G</th>
-                <th>P</th>
-                <th>Pts</th>
-                <th>Sets+</th>
-                <th>Sets-</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="standing in standings"
-                :key="standing.team"
-                :class="{ 'selected': selectedTeam === standing.team, 'clickable': true }"
-                @click="selectTeam(standing.team)"
-              >
-                <td class="pos-col">
-                  <span class="position-badge" :class="`pos-${standing.position}`">
-                    {{ standing.position }}
-                  </span>
-                </td>
-                <td class="team-col">
-                  <div class="team-name">
-                    {{ standing.team }}
-                    <span v-if="selectedTeam === standing.team" class="selected-indicator">✓</span>
-                  </div>
-                </td>
-                <td>{{ standing.played }}</td>
-                <td class="win-col">{{ standing.won }}</td>
-                <td class="loss-col">{{ standing.lost }}</td>
-                <td class="points-col">{{ standing.points }}</td>
-                <td>{{ standing.setsFor }}</td>
-                <td>{{ standing.setsAgainst }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <StandingsTable
+          :standings="standings"
+          variant="full"
+          :selectable="true"
+          :selected-team="selectedTeam"
+          :use-short-names="false"
+          @team-select="selectTeam"
+        />
       </section>
 
       <!-- Statistiques de l'équipe sélectionnée -->
@@ -198,13 +92,13 @@ function formatDate(dateStr) {
             <span class="title-icon">🏐</span>
             {{ selectedTeam ? `Matchs de ${selectedTeam}` : 'Tous les matchs' }}
           </h2>
-          <button @click="toggleSortOrder" class="sort-button" :title="sortOrder === 'desc' ? 'Trier du plus ancien au plus récent' : 'Trier du plus récent au plus ancien'">
+          <button @click="toggleSortOrder" class="sort-button">
             <span class="sort-icon">{{ sortOrder === 'desc' ? '↓' : '↑' }}</span>
             {{ sortOrder === 'desc' ? 'Plus récent en premier' : 'Plus ancien en premier' }}
           </button>
         </div>
 
-        <!-- Matchs passés par date -->
+        <!-- Matchs joués -->
         <div v-if="pastMatchesByDate.length > 0" class="matches-group">
           <h3 class="matches-group-title">Matchs joués</h3>
           <div
@@ -213,38 +107,21 @@ function formatDate(dateStr) {
             class="date-group"
           >
             <div class="date-header">
-              {{ formatDate(dateGroup.date) }}
+              {{ formatDateFull(dateGroup.date) }}
             </div>
             <div class="matches-list">
-              <div
+              <MatchCard
                 v-for="match in dateGroup.matches"
                 :key="match.id"
-                class="match-card played"
-              >
-                <div class="match-header">
-                  <span class="journee-badge">J{{ match.journee }}</span>
-                  <span class="match-time">{{ match.time }}</span>
-                </div>
-                <div class="match-teams">
-                  <div class="team" :class="{ 'winner': match.scoreA > match.scoreB }">
-                    <span class="team-name">{{ match.teamA }}</span>
-                    <span class="score">{{ match.scoreA }}</span>
-                  </div>
-                  <div class="vs">VS</div>
-                  <div class="team" :class="{ 'winner': match.scoreB > match.scoreA }">
-                    <span class="team-name">{{ match.teamB }}</span>
-                    <span class="score">{{ match.scoreB }}</span>
-                  </div>
-                </div>
-                <div v-if="match.sets" class="match-sets">
-                  {{ match.sets }}
-                </div>
-              </div>
+                :match="match"
+                variant="full"
+                :use-short-names="false"
+              />
             </div>
           </div>
         </div>
 
-        <!-- Matchs à venir par date -->
+        <!-- Matchs à venir -->
         <div v-if="upcomingMatchesByDate.length > 0" class="matches-group">
           <h3 class="matches-group-title">Matchs à venir</h3>
           <div
@@ -253,28 +130,16 @@ function formatDate(dateStr) {
             class="date-group"
           >
             <div class="date-header upcoming">
-              {{ formatDate(dateGroup.date) }}
+              {{ formatDateFull(dateGroup.date) }}
             </div>
             <div class="matches-list">
-              <div
+              <MatchCard
                 v-for="match in dateGroup.matches"
                 :key="match.id"
-                class="match-card upcoming"
-              >
-                <div class="match-header">
-                  <span class="journee-badge upcoming">J{{ match.journee }}</span>
-                  <span class="match-time">{{ match.time }}</span>
-                </div>
-                <div class="match-teams">
-                  <div class="team">
-                    <span class="team-name">{{ match.teamA }}</span>
-                  </div>
-                  <div class="vs">VS</div>
-                  <div class="team">
-                    <span class="team-name">{{ match.teamB }}</span>
-                  </div>
-                </div>
-              </div>
+                :match="match"
+                variant="full"
+                :use-short-names="false"
+              />
             </div>
           </div>
         </div>
@@ -289,13 +154,31 @@ function formatDate(dateStr) {
 
 <style scoped>
 .dashboard {
-  width: 100%;
+  max-width: 100%;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 1rem;
 }
 
 .dashboard-content {
   display: flex;
   flex-direction: column;
   gap: 2rem;
+}
+
+/* Sections */
+.standings-section,
+.matches-section {
+  background: var(--color-surface);
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: var(--shadow-lg);
 }
 
 .section-title {
@@ -310,123 +193,6 @@ function formatDate(dateStr) {
 
 .title-icon {
   font-size: 1.75rem;
-}
-
-/* Classement */
-.standings-section {
-  background: var(--color-surface);
-  border-radius: 1rem;
-  padding: 2rem;
-  box-shadow: var(--shadow-lg);
-}
-
-.standings-table-wrapper {
-  overflow-x: auto;
-}
-
-.standings-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.standings-table thead {
-  background: var(--color-surface-light);
-}
-
-.standings-table th {
-  padding: 1rem;
-  text-align: left;
-  font-weight: 600;
-  font-size: 0.875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-text-muted);
-}
-
-.standings-table td {
-  padding: 1rem;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.standings-table tbody tr {
-  transition: all 0.2s;
-}
-
-.standings-table tbody tr.clickable {
-  cursor: pointer;
-}
-
-.standings-table tbody tr:hover {
-  background: var(--color-surface-light);
-}
-
-.standings-table tbody tr.selected {
-  background: linear-gradient(90deg, var(--color-primary), transparent);
-  border-left: 4px solid var(--color-primary);
-}
-
-.pos-col {
-  width: 60px;
-  text-align: center;
-}
-
-.team-col {
-  min-width: 250px;
-}
-
-.position-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--color-surface-light);
-  font-weight: 700;
-  font-size: 0.875rem;
-}
-
-.position-badge.pos-1 {
-  background: linear-gradient(135deg, #ffd700, #ffed4e);
-  color: #1e293b;
-}
-
-.position-badge.pos-2 {
-  background: linear-gradient(135deg, #c0c0c0, #e8e8e8);
-  color: #1e293b;
-}
-
-.position-badge.pos-3 {
-  background: linear-gradient(135deg, #cd7f32, #daa06d);
-  color: #1e293b;
-}
-
-.team-name {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 500;
-}
-
-.selected-indicator {
-  color: var(--color-primary);
-  font-weight: 700;
-}
-
-.win-col {
-  color: var(--color-win);
-  font-weight: 600;
-}
-
-.loss-col {
-  color: var(--color-loss);
-  font-weight: 600;
-}
-
-.points-col {
-  font-weight: 700;
-  font-size: 1.1rem;
-  color: var(--color-primary);
 }
 
 /* Team Stats */
@@ -445,23 +211,23 @@ function formatDate(dateStr) {
 }
 
 .team-stats-header h3 {
-  font-size: 1.25rem;
-  font-weight: 700;
   color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
 }
 
 .close-btn {
   background: rgba(255, 255, 255, 0.2);
   border: none;
   color: white;
-  width: 32px;
-  height: 32px;
+  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.25rem;
   transition: all 0.2s;
 }
 
@@ -477,7 +243,7 @@ function formatDate(dateStr) {
 }
 
 .stat-card {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(10px);
   border-radius: 0.75rem;
   padding: 1.5rem;
@@ -492,93 +258,76 @@ function formatDate(dateStr) {
 }
 
 .stat-label {
+  color: rgba(255, 255, 255, 0.9);
   font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 /* Matches */
-.matches-section {
-  background: var(--color-surface);
-  border-radius: 1rem;
-  padding: 2rem;
-  box-shadow: var(--shadow-lg);
-}
-
 .matches-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
-  gap: 1rem;
   flex-wrap: wrap;
-}
-
-.matches-header .section-title {
-  margin-bottom: 0;
+  gap: 1rem;
 }
 
 .sort-button {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  background: var(--color-surface-light);
-  border: 1px solid var(--color-border);
-  border-radius: 0.5rem;
-  color: var(--color-text);
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
   transition: all 0.2s;
+  font-size: 0.875rem;
 }
 
 .sort-button:hover {
-  background: var(--color-background);
-  border-color: var(--color-primary);
-  transform: translateY(-1px);
+  background: var(--color-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
 }
 
 .sort-icon {
   font-size: 1.25rem;
-  font-weight: 700;
 }
 
 .matches-group {
   margin-bottom: 2rem;
 }
 
-.matches-group:last-child {
-  margin-bottom: 0;
-}
-
 .matches-group-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-  color: var(--color-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--color-border);
 }
 
 .date-group {
   margin-bottom: 1.5rem;
 }
 
-.date-group:last-child {
-  margin-bottom: 0;
-}
-
 .date-header {
-  font-size: 1rem;
   font-weight: 700;
-  color: var(--color-text);
-  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  margin-bottom: 1rem;
   padding: 0.5rem 1rem;
   background: var(--color-surface-light);
   border-radius: 0.5rem;
-  border-left: 4px solid var(--color-secondary);
+  border-left: 3px solid var(--color-secondary);
 }
 
 .date-header.upcoming {
@@ -586,160 +335,36 @@ function formatDate(dateStr) {
 }
 
 .matches-list {
-  display: grid;
-  gap: 0.75rem;
-  margin-left: 1rem;
-}
-
-.match-card {
-  background: var(--color-background);
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-  border: 1px solid var(--color-border);
-  transition: all 0.2s;
-}
-
-.match-card:hover {
-  border-color: var(--color-primary);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow);
-}
-
-.match-card.played {
-  border-left: 4px solid var(--color-secondary);
-}
-
-.match-card.upcoming {
-  border-left: 4px solid var(--color-draw);
-}
-
-.match-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.journee-badge {
-  background: var(--color-secondary);
-  color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 1rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-
-.journee-badge.upcoming {
-  background: var(--color-draw);
-}
-
-.match-time {
-  color: var(--color-text-muted);
-  font-size: 0.75rem;
-}
-
-.match-teams {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  flex-direction: column;
   gap: 1rem;
-  align-items: center;
-}
-
-.team {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.75rem;
-  background: var(--color-surface);
-  border-radius: 0.5rem;
-  transition: all 0.2s;
-}
-
-.team.winner {
-  background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.2));
-  border: 1px solid var(--color-win);
-}
-
-.team-name {
-  font-weight: 500;
-  flex: 1;
-}
-
-.score {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-primary);
-  min-width: 32px;
-  text-align: center;
-}
-
-.team.winner .score {
-  color: var(--color-win);
-}
-
-.vs {
-  font-weight: 700;
-  color: var(--color-text-muted);
-  font-size: 0.75rem;
-}
-
-.match-sets {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--color-border);
-  color: var(--color-text-muted);
-  font-size: 0.875rem;
-  text-align: center;
 }
 
 .empty-state {
   text-align: center;
   padding: 3rem;
   color: var(--color-text-muted);
-}
-
-.loading-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 400px;
-  gap: 1rem;
+  font-size: 1.125rem;
 }
 
 @media (max-width: 768px) {
   .standings-section,
   .matches-section,
   .team-stats-section {
-    padding: 1rem;
+    padding: 1.5rem;
   }
 
   .section-title {
     font-size: 1.25rem;
   }
 
-  .standings-table th,
-  .standings-table td {
-    padding: 0.5rem;
-    font-size: 0.875rem;
-  }
-
-  .team-col {
-    min-width: 180px;
-  }
-
-  .match-teams {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-  }
-
-  .vs {
-    text-align: center;
-  }
-
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .sort-button {
+    font-size: 0.75rem;
+    padding: 0.5rem 1rem;
   }
 }
 </style>
