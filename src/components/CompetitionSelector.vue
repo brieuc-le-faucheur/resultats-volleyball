@@ -1,18 +1,67 @@
 <script setup lang="ts">
+import { ref, computed } from 'vue'
 import { useCompetitionSelector } from '../composables/useCompetitionSelector'
+import type { Pool } from '../config'
 
 const {
   competitions,
   selectedCompetitionId,
+  selectedSaison,
   selectedPoolCode,
   availablePools,
+  poolsLoading,
   selectCompetition,
   selectPool
 } = useCompetitionSelector()
 
+// Recherche textuelle
+const searchQuery = ref('')
+
+// Grouper les poules par catégorie
+const poolsByCategory = computed(() => {
+  const groups = new Map<string, Pool[]>()
+
+  availablePools.value.forEach(pool => {
+    const category = pool.category || 'Autres'
+    if (!groups.has(category)) {
+      groups.set(category, [])
+    }
+    groups.get(category)!.push(pool)
+  })
+
+  // Trier les catégories
+  return new Map(Array.from(groups.entries()).sort((a, b) => a[0].localeCompare(b[0])))
+})
+
+// Poules filtrées par recherche
+computed(() => {
+  if (!searchQuery.value.trim()) {
+    return poolsByCategory.value
+  }
+
+  const query = searchQuery.value.toLowerCase()
+  const filtered = new Map<string, Pool[]>()
+
+  poolsByCategory.value.forEach((pools, category) => {
+    const matchingPools = pools.filter(p =>
+        p.name.toLowerCase().includes(query) ||
+        p.code.toLowerCase().includes(query)
+    )
+    if (matchingPools.length > 0) {
+      filtered.set(category, matchingPools)
+    }
+  })
+
+  return filtered
+});
+// Computed pour l'ID de compétition combiné (pour le select)
+const selectedCompetitionKey = computed(() => `${selectedCompetitionId.value}|${selectedSaison.value}`)
+
 function handleCompetitionChange(event: Event): void {
   const target = event.target as HTMLSelectElement
-  selectCompetition(target.value)
+  const [competitionId, saison] = target.value.split('|')
+  selectCompetition(competitionId, saison)
+  searchQuery.value = ''
 }
 
 function handlePoolChange(event: Event): void {
@@ -28,20 +77,21 @@ function handlePoolChange(event: Event): void {
       <label for="competition-select">Compétition</label>
       <select
         id="competition-select"
-        :value="selectedCompetitionId"
+        :value="selectedCompetitionKey"
         @change="handleCompetitionChange"
         class="selector"
       >
         <option
           v-for="comp in competitions"
-          :key="comp.id"
-          :value="comp.id"
+          :key="`${comp.id}|${comp.saison}`"
+          :value="`${comp.id}|${comp.saison}`"
         >
-          {{ comp.name }}
+          {{ comp.name }} {{ comp.saison }}
         </option>
       </select>
     </div>
 
+    <!-- Sélecteur de poule -->
     <div class="selector-group">
       <label for="pool-select">Poule</label>
       <select
@@ -49,14 +99,27 @@ function handlePoolChange(event: Event): void {
         :value="selectedPoolCode"
         @change="handlePoolChange"
         class="selector"
+        :disabled="poolsLoading"
       >
-        <option
-          v-for="pool in availablePools"
-          :key="pool.code"
-          :value="pool.code"
-        >
-          {{ pool.name }}
-        </option>
+        <option v-if="poolsLoading" value="">Chargement...</option>
+        <template v-else-if="availablePools.length === 0">
+          <option value="">Aucune poule disponible</option>
+        </template>
+        <template v-else>
+          <optgroup
+            v-for="[category, pools] in poolsByCategory"
+            :key="category"
+            :label="category"
+          >
+            <option
+              v-for="pool in pools"
+              :key="pool.code"
+              :value="pool.code"
+            >
+              {{ pool.name }}
+            </option>
+          </optgroup>
+        </template>
       </select>
     </div>
   </div>
@@ -106,6 +169,11 @@ label {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.selector:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 @media (max-width: 768px) {
