@@ -1,6 +1,7 @@
 <script setup>
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
+import ThemeToggle from './components/ThemeToggle.vue'
 
 const route = useRoute()
 const isCompactView = computed(() => route.name === 'compact')
@@ -18,6 +19,7 @@ const isCompactView = computed(() => route.name === 'compact')
           </div>
         </div>
         <nav class="nav-links">
+          <ThemeToggle />
           <router-link to="/full" class="nav-link">Vue complète</router-link>
           <router-link to="/compact" class="nav-link">Vue compacte</router-link>
         </nav>
@@ -37,7 +39,9 @@ const isCompactView = computed(() => route.name === 'compact')
   box-sizing: border-box;
 }
 
-:root {
+/* Thème DARK (par défaut) */
+:root,
+:root[data-theme="dark"] {
   --color-primary: #2563eb;
   --color-primary-dark: #1d4ed8;
   --color-secondary: #10b981;
@@ -54,11 +58,35 @@ const isCompactView = computed(() => route.name === 'compact')
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
 }
 
+/* Thème LIGHT */
+:root[data-theme="light"] {
+  --color-primary: #2563eb;
+  --color-primary-dark: #1d4ed8;
+  --color-secondary: #059669;
+  --color-background: #f8fafc;
+  --color-surface: #ffffff;
+  --color-surface-light: #f1f5f9;
+  --color-text: #0f172a;
+  --color-text-muted: #64748b;
+  --color-border: #e2e8f0;
+  --color-win: #059669;
+  --color-loss: #dc2626;
+  --color-draw: #d97706;
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.15), 0 4px 6px -4px rgb(0 0 0 / 0.15);
+}
+
+/* Ajustements spécifiques pour le mode light */
+[data-theme="light"] .volleyball-icon {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  background: var(--color-background);
   color: var(--color-text);
   min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .app {
