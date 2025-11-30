@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
-import ThemeToggle from './components/ThemeToggle.vue'
-import CompetitionSelector from './components/CompetitionSelector.vue'
+import AppHeader from './components/AppHeader.vue'
 
 const route = useRoute()
 const isCompactView = computed(() => route.name === 'compact')
@@ -10,26 +9,7 @@ const isCompactView = computed(() => route.name === 'compact')
 
 <template>
   <div class="app" :class="{ 'compact-mode': isCompactView }">
-    <header class="app-header" :class="{ 'compact-header': isCompactView }">
-      <div class="header-content">
-        <div class="logo-section">
-          <div class="volleyball-icon">🏐</div>
-          <div>
-            <h1>Volleyball Dashboard</h1>
-            <p v-if="!isCompactView" class="subtitle">Résultats et classement</p>
-          </div>
-        </div>
-
-        <!-- Sélecteur de compétition (uniquement en vue complète) -->
-        <CompetitionSelector v-if="!isCompactView" />
-
-        <nav class="nav-links">
-          <ThemeToggle />
-          <router-link to="/full" class="nav-link">Vue complète</router-link>
-          <router-link to="/compact" class="nav-link">Vue compacte</router-link>
-        </nav>
-      </div>
-    </header>
+    <AppHeader />
 
     <main class="app-main" :class="{ 'compact-main': isCompactView }">
       <router-view />
