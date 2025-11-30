@@ -1,34 +1,31 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import VolleyballDashboard from './components/VolleyballDashboard.vue'
+import { useRoute } from 'vue-router'
+import { computed } from 'vue'
 
-const loading = ref(true)
-
-onMounted(() => {
-  loading.value = false
-})
+const route = useRoute()
+const isCompactView = computed(() => route.name === 'compact')
 </script>
 
 <template>
-  <div class="app">
-    <header class="app-header">
+  <div class="app" :class="{ 'compact-mode': isCompactView }">
+    <header class="app-header" :class="{ 'compact-header': isCompactView }">
       <div class="header-content">
         <div class="logo-section">
           <div class="volleyball-icon">🏐</div>
           <div>
             <h1>Volleyball Dashboard</h1>
-            <p class="subtitle">Résultats et classement DMA - PTBR35</p>
+            <p v-if="!isCompactView" class="subtitle">Résultats et classement DMA - PTBR35</p>
           </div>
         </div>
+        <nav class="nav-links">
+          <router-link to="/" class="nav-link">Vue complète</router-link>
+          <router-link to="/compact" class="nav-link">Vue compacte</router-link>
+        </nav>
       </div>
     </header>
 
-    <main class="app-main">
-      <VolleyballDashboard v-if="!loading" />
-      <div v-else class="loading">
-        <div class="spinner"></div>
-        <p>Chargement...</p>
-      </div>
+    <main class="app-main" :class="{ 'compact-main': isCompactView }">
+      <router-view />
     </main>
   </div>
 </template>
@@ -80,10 +77,18 @@ body {
   backdrop-filter: blur(10px);
 }
 
+.app-header.compact-header {
+  position: static;
+}
+
 .header-content {
   max-width: 1400px;
   margin: 0 auto;
   padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
 }
 
 .logo-section {
@@ -127,6 +132,43 @@ body {
   margin: 0 auto;
   padding: 2rem;
   width: 100%;
+}
+
+.app.compact-mode {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.app-main.compact-main {
+  max-width: 100%;
+  padding: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-link {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.nav-link:hover {
+  background: var(--color-surface-light);
+  color: var(--color-text);
+}
+
+.nav-link.router-link-active {
+  background: var(--color-primary);
+  color: white;
 }
 
 .loading {
