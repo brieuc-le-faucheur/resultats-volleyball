@@ -13,7 +13,10 @@ export interface UseCompetitionSelectorReturn {
   buildFFVBUrl: () => string
 }
 
-export function useCompetitionSelector(): UseCompetitionSelectorReturn {
+// Instance singleton partagée
+let selectorInstance: UseCompetitionSelectorReturn | null = null
+
+function createCompetitionSelector(): UseCompetitionSelectorReturn {
   // État réactif
   const competitions = ref<Competition[]>(config.competitions)
   const selectedCompetitionId = ref<string>(
@@ -78,4 +81,11 @@ export function useCompetitionSelector(): UseCompetitionSelectorReturn {
     selectPool,
     buildFFVBUrl
   }
+}
+
+export function useCompetitionSelector(): UseCompetitionSelectorReturn {
+  if (!selectorInstance) {
+    selectorInstance = createCompetitionSelector()
+  }
+  return selectorInstance
 }

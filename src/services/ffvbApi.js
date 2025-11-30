@@ -1,5 +1,5 @@
 import { parseStandings, parseMatches } from './ffvbParser.js'
-import { config } from '../config'
+import { config } from '../config.ts'
 
 /**
  * Fetch FFVB data from mock server or live FFVB website
