@@ -1,12 +1,13 @@
 import { parseStandings, parseMatches } from './ffvbParser.js'
-import { config } from '../config.js'
+import { config } from '../config'
 
 /**
  * Fetch FFVB data from mock server or live FFVB website
  *
+ * @param {string} liveUrl - URL to fetch from in live mode (ignored in mock mode)
  * @returns {Promise<{standings: Array, matches: Array}>}
  */
-export async function fetchFFVBData() {
+export async function fetchFFVBData(liveUrl) {
   try {
     let url
 
@@ -15,7 +16,7 @@ export async function fetchFFVBData() {
       url = config.mockServerUrl
     } else {
       // Production mode: use CORS proxy to fetch from FFVB
-      url = config.corsProxy + config.liveDataUrl
+      url = config.corsProxy + liveUrl
     }
 
     const response = await fetch(url)

@@ -1,5 +1,6 @@
-import { ref, onMounted, type Ref } from 'vue'
+import { ref, onMounted, watch, type Ref } from 'vue'
 import { fetchFFVBData, type FFVBMatch } from '../services/ffvbApi.js'
+import { useCompetitionSelector } from './useCompetitionSelector'
 
 export interface Match {
   id: string
@@ -39,6 +40,9 @@ export function useFFVBData(): UseFFVBDataReturn {
   const loading = ref(true)
   const error = ref<Error | null>(null)
 
+  // Récupérer l'URL dynamique depuis le sélecteur de compétition
+  const { buildFFVBUrl, selectedCompetitionId, selectedPoolCode } = useCompetitionSelector()
+
   function parseFFVBDate(dateStr: string): string {
     if (!dateStr || dateStr.trim() === '') return ''
     const parts = dateStr.split('/')
@@ -54,7 +58,9 @@ export function useFFVBData(): UseFFVBDataReturn {
     loading.value = true
     error.value = null
     try {
-      const data = await fetchFFVBData()
+      // Utiliser l'URL dynamique au lieu de l'URL hardcodée
+      const url = buildFFVBUrl()
+      const data = await fetchFFVBData(url)
       standings.value = data.standings
 
       matches.value = data.matches.map((match: FFVBMatch) => {
@@ -79,6 +85,11 @@ export function useFFVBData(): UseFFVBDataReturn {
       loading.value = false
     }
   }
+
+  // Recharger les données quand la sélection de compétition ou de poule change
+  watch([selectedCompetitionId, selectedPoolCode], () => {
+    loadData()
+  })
 
   onMounted(() => loadData())
 

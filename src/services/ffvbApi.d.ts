@@ -27,4 +27,4 @@ export interface FFVBData {
   standings: FFVBStanding[]
 }
 
-export function fetchFFVBData(): Promise<FFVBData>
+export function fetchFFVBData(liveUrl: string): Promise<FFVBData>
