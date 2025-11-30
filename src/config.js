@@ -4,7 +4,7 @@
 
 export const config = {
   // Mode de données: 'mock' pour utiliser le serveur mock local, 'live' pour les données réelles FFVB
-  dataMode: 'live',
+  dataMode: 'mock',
 
   // URLs
   mockServerUrl: 'http://localhost:3001/ffvb-data',
