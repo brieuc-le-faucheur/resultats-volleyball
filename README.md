@@ -15,11 +15,43 @@ Dashboard moderne pour consulter les résultats et classements de volleyball de 
 ## Installation
 
 ```bash
+# Installer les dépendances du frontend
 npm install
+
+# Installer les dépendances du backend mock
+cd backend-mock
+npm install
+cd ..
 ```
 
 ## Développement
 
+### Avec le serveur mock (recommandé)
+
+1. Démarrer le serveur mock:
+```bash
+cd backend-mock
+npm start
+```
+
+2. Dans un autre terminal, démarrer le frontend:
+```bash
+npm run dev
+```
+
+Le serveur mock sert les données FFVB depuis un fichier HTML local pour éviter les appels réseau répétés.
+
+### Avec les données en direct
+
+Modifier `src/config.js`:
+```javascript
+export const config = {
+  dataMode: 'live', // au lieu de 'mock'
+  // ...
+}
+```
+
+Puis lancer uniquement:
 ```bash
 npm run dev
 ```

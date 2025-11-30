@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { fetchFFVBData } from '../services/ffvbApi.js'
 
 const matches = ref([])
 const standings = ref([])
@@ -8,60 +9,38 @@ const loading = ref(true)
 
 // Fonction pour convertir le format de date DD/MM/YY en YYYY-MM-DD
 function parseFFVBDate(dateStr) {
+  if (!dateStr || dateStr.trim() === '') return ''
   const [day, month, year] = dateStr.split('/')
-  return `20${year}-${month}-${day}`
+  return `20${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
 }
 
-// Données réelles depuis FFVB
-const mockData = {
-  standings: [
-    { position: 1, team: 'RENNES CPB 4', played: 6, won: 6, lost: 4, points: 16, setsFor: 18, setsAgainst: 4 },
-    { position: 2, team: 'LES BLEUETS PORTES DE BZH 2', played: 6, won: 4, lost: 2, points: 13, setsFor: 15, setsAgainst: 8 },
-    { position: 3, team: 'UGS GUIPEL / LANGAN 2', played: 5, won: 4, lost: 1, points: 12, setsFor: 14, setsAgainst: 7 },
-    { position: 4, team: 'BETTON 1', played: 6, won: 4, lost: 2, points: 12, setsFor: 13, setsAgainst: 8 },
-    { position: 5, team: 'RENNES TA 1', played: 6, won: 3, lost: 3, points: 10, setsFor: 12, setsAgainst: 11 },
-    { position: 6, team: 'COMBOURG 1', played: 5, won: 1, lost: 4, points: 2, setsFor: 6, setsAgainst: 14 },
-    { position: 7, team: 'MARPIRE CHAMPEAUX 2', played: 5, won: 0, lost: 5, points: 1, setsFor: 4, setsAgainst: 15 },
-    { position: 8, team: 'ST MALO 3', played: 5, won: 0, lost: 5, points: 0, setsFor: 0, setsAgainst: 15 },
-  ],
-  matches: [
-    { id: 'DMAA001', journee: 1, date: parseFFVBDate('25/10/25'), time: '18:30', teamA: 'BETTON 1', teamB: 'MARPIRE CHAMPEAUX 2', scoreA: 3, scoreB: 1, sets: '21:25, 25:15, 25:20, 25:19', played: true },
-    { id: 'DMAA002', journee: 1, date: parseFFVBDate('04/10/25'), time: '-', teamA: 'UGS GUIPEL / LANGAN 2', teamB: 'RENNES TA 1', scoreA: 3, scoreB: 2, sets: '25:18, 10:25, 22:25, 25:23, 15:7', played: true },
-    { id: 'DMAA003', journee: 1, date: parseFFVBDate('11/10/25'), time: '18:00', teamA: 'LES BLEUETS PORTES DE BZH 2', teamB: 'COMBOURG 1', scoreA: 3, scoreB: 1, sets: '25:11, 25:12, 20:25, 25:20', played: true },
-    { id: 'DMAA004', journee: 1, date: parseFFVBDate('04/10/25'), time: '17:00', teamA: 'RENNES CPB 4', teamB: 'ST MALO 3', scoreA: 3, scoreB: 0, sets: '25:23, 25:17, 25:16', played: true },
-    { id: 'DMAA005', journee: 2, date: parseFFVBDate('18/10/25'), time: '18:30', teamA: 'RENNES CPB 4', teamB: 'MARPIRE CHAMPEAUX 2', scoreA: 3, scoreB: 0, sets: '25:16, 27:25, 25:22', played: true },
-    { id: 'DMAA006', journee: 2, date: parseFFVBDate('18/10/25'), time: '-', teamA: 'ST MALO 3', teamB: 'LES BLEUETS PORTES DE BZH 2', scoreA: 0, scoreB: 3, sets: '21:25, 20:25, 23:25', played: true },
-    { id: 'DMAA007', journee: 2, date: parseFFVBDate('18/10/25'), time: '18:00', teamA: 'COMBOURG 1', teamB: 'UGS GUIPEL / LANGAN 2', scoreA: 1, scoreB: 3, sets: '25:15, 21:25, 16:25, 15:25', played: true },
-    { id: 'DMAA008', journee: 2, date: parseFFVBDate('18/10/25'), time: '-', teamA: 'RENNES TA 1', teamB: 'BETTON 1', scoreA: 1, scoreB: 3, sets: '17:25, 16:25, 25:18, 22:25', played: true },
-    { id: 'DMAA009', journee: 3, date: parseFFVBDate('01/11/25'), time: '-', teamA: 'MARPIRE CHAMPEAUX 2', teamB: 'RENNES TA 1', scoreA: 1, scoreB: 3, sets: '20:25, 22:25, 25:20, 18:25', played: true },
-    { id: 'DMAA010', journee: 3, date: parseFFVBDate('01/11/25'), time: '-', teamA: 'BETTON 1', teamB: 'COMBOURG 1', scoreA: 3, scoreB: 0, sets: '25:23, 25:19, 25:23', played: true },
-    { id: 'DMAA011', journee: 3, date: parseFFVBDate('01/11/25'), time: '-', teamA: 'UGS GUIPEL / LANGAN 2', teamB: 'ST MALO 3', scoreA: 3, scoreB: 0, sets: '25:17, 27:25, 25:22', played: true },
-    { id: 'DMAA012', journee: 3, date: parseFFVBDate('01/11/25'), time: '18:00', teamA: 'LES BLEUETS PORTES DE BZH 2', teamB: 'RENNES CPB 4', scoreA: 2, scoreB: 3, sets: '25:18, 16:25, 22:25, 25:17, 13:15', played: true },
-    { id: 'DMAA013', journee: 4, date: parseFFVBDate('14/11/25'), time: '21:00', teamA: 'LES BLEUETS PORTES DE BZH 2', teamB: 'MARPIRE CHAMPEAUX 2', scoreA: 3, scoreB: 0, sets: '25:22, 25:23, 25:23', played: true },
-    { id: 'DMAA014', journee: 4, date: parseFFVBDate('15/11/25'), time: '21:00', teamA: 'RENNES CPB 4', teamB: 'UGS GUIPEL / LANGAN 2', scoreA: 3, scoreB: 2, sets: '27:25, 25:20, 22:25, 19:25, 15:11', played: true },
-    { id: 'DMAA015', journee: 4, date: parseFFVBDate('15/11/25'), time: '-', teamA: 'ST MALO 3', teamB: 'BETTON 1', scoreA: 0, scoreB: 3, sets: '23:25, 21:25, 17:25', played: true },
-    { id: 'DMAA016', journee: 4, date: parseFFVBDate('15/11/25'), time: '19:00', teamA: 'COMBOURG 1', teamB: 'RENNES TA 1', scoreA: 1, scoreB: 3, sets: '26:24, 23:25, 19:25, 21:25', played: true },
-    { id: 'DMAA017', journee: 5, date: parseFFVBDate('22/11/25'), time: '-', teamA: 'MARPIRE CHAMPEAUX 2', teamB: 'COMBOURG 1', scoreA: 2, scoreB: 3, sets: '16:25, 15:25, 25:20, 26:24, 12:15', played: true },
-    { id: 'DMAA018', journee: 5, date: parseFFVBDate('22/11/25'), time: '-', teamA: 'RENNES TA 1', teamB: 'ST MALO 3', scoreA: 3, scoreB: 0, sets: '25:16, 25:23, 25:17', played: true },
-    { id: 'DMAA019', journee: 5, date: parseFFVBDate('22/11/25'), time: '-', teamA: 'BETTON 1', teamB: 'RENNES CPB 4', scoreA: 0, scoreB: 3, sets: '13:25, 20:25, 17:25', played: true },
-    { id: 'DMAA020', journee: 5, date: parseFFVBDate('22/11/25'), time: '-', teamA: 'UGS GUIPEL / LANGAN 2', teamB: 'LES BLEUETS PORTES DE BZH 2', scoreA: 3, scoreB: 1, sets: '25:19, 17:25, 25:17, 25:22', played: true },
-    { id: 'DMAA021', journee: 6, date: parseFFVBDate('29/11/25'), time: '-', teamA: 'UGS GUIPEL / LANGAN 2', teamB: 'MARPIRE CHAMPEAUX 2', scoreA: null, scoreB: null, sets: '', played: false },
-    { id: 'DMAA022', journee: 6, date: parseFFVBDate('29/11/25'), time: '18:00', teamA: 'LES BLEUETS PORTES DE BZH 2', teamB: 'BETTON 1', scoreA: 3, scoreB: 1, sets: '25:21, 25:22, 21:25, 25:21', played: true },
-    { id: 'DMAA023', journee: 6, date: parseFFVBDate('29/11/25'), time: '16:00', teamA: 'RENNES CPB 4', teamB: 'RENNES TA 1', scoreA: 3, scoreB: 0, sets: '25:16, 25:14, 25:22', played: true },
-    { id: 'DMAA024', journee: 6, date: parseFFVBDate('29/11/25'), time: '21:00', teamA: 'ST MALO 3', teamB: 'COMBOURG 1', scoreA: null, scoreB: null, sets: '', played: false },
-    { id: 'DMAA025', journee: 7, date: parseFFVBDate('06/12/25'), time: '-', teamA: 'MARPIRE CHAMPEAUX 2', teamB: 'ST MALO 3', scoreA: null, scoreB: null, sets: '', played: false },
-    { id: 'DMAA026', journee: 7, date: parseFFVBDate('06/12/25'), time: '19:00', teamA: 'COMBOURG 1', teamB: 'RENNES CPB 4', scoreA: null, scoreB: null, sets: '', played: false },
-    { id: 'DMAA027', journee: 7, date: parseFFVBDate('06/12/25'), time: '-', teamA: 'RENNES TA 1', teamB: 'LES BLEUETS PORTES DE BZH 2', scoreA: null, scoreB: null, sets: '', played: false },
-    { id: 'DMAA028', journee: 7, date: parseFFVBDate('06/12/25'), time: '-', teamA: 'BETTON 1', teamB: 'UGS GUIPEL / LANGAN 2', scoreA: null, scoreB: null, sets: '', played: false },
-  ]
-}
+onMounted(async () => {
+  loading.value = true
+  try {
+    const data = await fetchFFVBData()
+    standings.value = data.standings
 
-onMounted(() => {
-  setTimeout(() => {
-    standings.value = mockData.standings
-    matches.value = mockData.matches
+    // Transform matches to match the expected format
+    matches.value = data.matches.map(match => {
+      const journeeMatch = match.journee.match(/\d+/)
+      return {
+        id: match.code,
+        journee: journeeMatch ? parseInt(journeeMatch[0]) : 0,
+        date: parseFFVBDate(match.date),
+        time: match.time || '-',
+        teamA: match.homeTeam,
+        teamB: match.awayTeam,
+        scoreA: match.homeScore,
+        scoreB: match.awayScore,
+        sets: match.setScores,
+        played: match.played
+      }
+    })
+  } catch (error) {
+    console.error('Erreur lors du chargement des données FFVB:', error)
+  } finally {
     loading.value = false
-  }, 500)
+  }
 })
 
 const filteredMatches = computed(() => {
@@ -137,7 +116,6 @@ function formatDate(dateStr) {
                 <th>Pts</th>
                 <th>Sets+</th>
                 <th>Sets-</th>
-                <th>Diff</th>
               </tr>
             </thead>
             <tbody>
@@ -164,9 +142,6 @@ function formatDate(dateStr) {
                 <td class="points-col">{{ standing.points }}</td>
                 <td>{{ standing.setsFor }}</td>
                 <td>{{ standing.setsAgainst }}</td>
-                <td :class="standing.setsFor - standing.setsAgainst >= 0 ? 'positive' : 'negative'">
-                  {{ standing.setsFor - standing.setsAgainst > 0 ? '+' : '' }}{{ standing.setsFor - standing.setsAgainst }}
-                </td>
               </tr>
             </tbody>
           </table>
@@ -429,16 +404,6 @@ function formatDate(dateStr) {
   font-weight: 700;
   font-size: 1.1rem;
   color: var(--color-primary);
-}
-
-.positive {
-  color: var(--color-win);
-  font-weight: 600;
-}
-
-.negative {
-  color: var(--color-loss);
-  font-weight: 600;
 }
 
 /* Team Stats */
