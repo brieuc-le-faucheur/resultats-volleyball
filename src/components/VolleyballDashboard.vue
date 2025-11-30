@@ -6,6 +6,7 @@ const matches = ref([])
 const standings = ref([])
 const selectedTeam = ref(null)
 const loading = ref(true)
+const sortOrder = ref('desc') // 'asc' or 'desc'
 
 // Fonction pour convertir le format de date DD/MM/YY en YYYY-MM-DD
 function parseFFVBDate(dateStr) {
@@ -70,7 +71,13 @@ const matchesByDate = computed(() => {
     groups[match.date].matches.push(match)
   })
 
-  return Object.values(groups).sort((a, b) => new Date(b.date) - new Date(a.date))
+  const sorted = Object.values(groups).sort((a, b) => {
+    const dateA = new Date(a.date)
+    const dateB = new Date(b.date)
+    return sortOrder.value === 'desc' ? dateB - dateA : dateA - dateB
+  })
+
+  return sorted
 })
 
 const pastMatchesByDate = computed(() => {
@@ -78,8 +85,12 @@ const pastMatchesByDate = computed(() => {
 })
 
 const upcomingMatchesByDate = computed(() => {
-  return matchesByDate.value.filter(group => !group.isPast).reverse()
+  return matchesByDate.value.filter(group => !group.isPast)
 })
+
+function toggleSortOrder() {
+  sortOrder.value = sortOrder.value === 'desc' ? 'asc' : 'desc'
+}
 
 const selectedTeamStats = computed(() => {
   if (!selectedTeam.value) return null
@@ -182,10 +193,16 @@ function formatDate(dateStr) {
 
       <!-- Résultats -->
       <section class="matches-section">
-        <h2 class="section-title">
-          <span class="title-icon">🏐</span>
-          {{ selectedTeam ? `Matchs de ${selectedTeam}` : 'Tous les matchs' }}
-        </h2>
+        <div class="matches-header">
+          <h2 class="section-title">
+            <span class="title-icon">🏐</span>
+            {{ selectedTeam ? `Matchs de ${selectedTeam}` : 'Tous les matchs' }}
+          </h2>
+          <button @click="toggleSortOrder" class="sort-button" :title="sortOrder === 'desc' ? 'Trier du plus ancien au plus récent' : 'Trier du plus récent au plus ancien'">
+            <span class="sort-icon">{{ sortOrder === 'desc' ? '↓' : '↑' }}</span>
+            {{ sortOrder === 'desc' ? 'Plus récent en premier' : 'Plus ancien en premier' }}
+          </button>
+        </div>
 
         <!-- Matchs passés par date -->
         <div v-if="pastMatchesByDate.length > 0" class="matches-group">
@@ -487,6 +504,45 @@ function formatDate(dateStr) {
   border-radius: 1rem;
   padding: 2rem;
   box-shadow: var(--shadow-lg);
+}
+
+.matches-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.matches-header .section-title {
+  margin-bottom: 0;
+}
+
+.sort-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: var(--color-surface-light);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  color: var(--color-text);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sort-button:hover {
+  background: var(--color-background);
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+.sort-icon {
+  font-size: 1.25rem;
+  font-weight: 700;
 }
 
 .matches-group {
