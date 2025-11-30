@@ -2,11 +2,9 @@
 import { ref, computed, onMounted } from 'vue'
 
 const matches = ref([])
-const teams = ref([])
 const standings = ref([])
 const selectedTeam = ref(null)
 const loading = ref(true)
-const error = ref(null)
 
 // Fonction pour convertir le format de date DD/MM/YY en YYYY-MM-DD
 function parseFFVBDate(dateStr) {
@@ -62,7 +60,6 @@ onMounted(() => {
   setTimeout(() => {
     standings.value = mockData.standings
     matches.value = mockData.matches
-    teams.value = [...new Set(mockData.standings.map(s => s.team))].sort()
     loading.value = false
   }, 500)
 })
@@ -78,21 +75,17 @@ const filteredMatches = computed(() => {
 const matchesByDate = computed(() => {
   const groups = {}
   filteredMatches.value.forEach(match => {
-    const date = match.date
-    if (!groups[date]) {
-      groups[date] = {
-        date: date,
+    if (!groups[match.date]) {
+      groups[match.date] = {
+        date: match.date,
         played: match.played,
         matches: []
       }
     }
-    groups[date].matches.push(match)
+    groups[match.date].matches.push(match)
   })
 
-  // Convertir en tableau et trier par date
-  return Object.values(groups).sort((a, b) => {
-    return new Date(b.date) - new Date(a.date)
-  })
+  return Object.values(groups).sort((a, b) => new Date(b.date) - new Date(a.date))
 })
 
 const pastMatchesByDate = computed(() => {
@@ -112,15 +105,6 @@ function selectTeam(team) {
   selectedTeam.value = selectedTeam.value === team ? null : team
 }
 
-function getMatchResult(match, team) {
-  if (!match.played) return 'upcoming'
-  if (match.teamA === team) {
-    return match.scoreA > match.scoreB ? 'win' : 'loss'
-  } else {
-    return match.scoreB > match.scoreA ? 'win' : 'loss'
-  }
-}
-
 function formatDate(dateStr) {
   const date = new Date(dateStr)
   return date.toLocaleDateString('fr-FR', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })
@@ -132,10 +116,6 @@ function formatDate(dateStr) {
     <div v-if="loading" class="loading-state">
       <div class="spinner"></div>
       <p>Chargement des données...</p>
-    </div>
-
-    <div v-else-if="error" class="error-state">
-      <p>{{ error }}</p>
     </div>
 
     <div v-else class="dashboard-content">
@@ -699,15 +679,6 @@ function formatDate(dateStr) {
   justify-content: center;
   min-height: 400px;
   gap: 1rem;
-}
-
-.error-state {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid var(--color-loss);
-  border-radius: 0.75rem;
-  padding: 2rem;
-  text-align: center;
-  color: var(--color-loss);
 }
 
 @media (max-width: 768px) {
