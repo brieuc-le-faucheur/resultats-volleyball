@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 import { useFFVBData } from '../composables/useFFVBData'
 import { useMatchFilters } from '../composables/useMatchFilters'

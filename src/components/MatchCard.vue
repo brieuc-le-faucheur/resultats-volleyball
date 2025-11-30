@@ -28,12 +28,12 @@
         <span class="match-time">{{ match.time }}</span>
       </div>
       <div class="match-teams">
-        <div class="team" :class="{ 'winner': match.played && match.scoreA > match.scoreB }">
+        <div class="team" :class="{ 'winner': match.played && match.scoreA !== null && match.scoreB !== null && match.scoreA > match.scoreB }">
           <span class="team-name">{{ displayTeamName(match.teamA) }}</span>
           <span v-if="match.played" class="score">{{ match.scoreA }}</span>
         </div>
         <div class="vs">VS</div>
-        <div class="team" :class="{ 'winner': match.played && match.scoreB > match.scoreA }">
+        <div class="team" :class="{ 'winner': match.played && match.scoreA !== null && match.scoreB !== null && match.scoreB > match.scoreA }">
           <span class="team-name">{{ displayTeamName(match.teamB) }}</span>
           <span v-if="match.played" class="score">{{ match.scoreB }}</span>
         </div>
@@ -45,29 +45,23 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 import { formatShortTeamName } from '../utils/teamNames'
 import { useDateFormatting } from '../composables/useDateFormatting'
+import type { Match } from '../composables/useFFVBData'
 
-const props = defineProps({
-  match: {
-    type: Object,
-    required: true
-  },
-  variant: {
-    type: String,
-    default: 'full',
-    validator: (v) => ['full', 'compact'].includes(v)
-  },
-  useShortNames: {
-    type: Boolean,
-    default: false
-  },
-  dateFormatter: {
-    type: Function,
-    default: null
-  }
+interface Props {
+  match: Match
+  variant?: 'full' | 'compact'
+  useShortNames?: boolean
+  dateFormatter?: ((date: string) => string) | null
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  variant: 'full',
+  useShortNames: false,
+  dateFormatter: null
 })
 
 const { formatDateFull, formatDateCompact } = useDateFormatting()
@@ -81,7 +75,7 @@ const formattedDate = computed(() => {
     : formatDateFull(props.match.date)
 })
 
-function displayTeamName(team) {
+function displayTeamName(team: string): string {
   return props.useShortNames ? formatShortTeamName(team) : team
 }
 </script>

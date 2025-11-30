@@ -2,7 +2,7 @@
  * Tronque intelligemment les noms d'équipes pour l'affichage compact
  * Algorithme générique applicable à toutes les compétitions
  */
-export function formatShortTeamName(name, maxLength = 15) {
+export function formatShortTeamName(name: string, maxLength = 15): string {
   if (name.length <= maxLength) return name
 
   // Stratégie 1 : Garder les initiales si plusieurs mots
@@ -18,7 +18,7 @@ export function formatShortTeamName(name, maxLength = 15) {
 
   // Stratégie 2 : Garder premier + dernier mot si 2 mots
   if (words.length === 2) {
-    const short = words[0].substring(0, 8) + ' ' + words[1].substring(0, 5)
+    const short = words[0]!.substring(0, 8) + ' ' + words[1]!.substring(0, 5)
     if (short.length <= maxLength) return short.trim()
   }
 
@@ -29,6 +29,6 @@ export function formatShortTeamName(name, maxLength = 15) {
 /**
  * Retourne le nom complet (identity function pour cohérence)
  */
-export function formatFullTeamName(name) {
+export function formatFullTeamName(name: string): string {
   return name
 }

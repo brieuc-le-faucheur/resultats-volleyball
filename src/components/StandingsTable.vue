@@ -47,42 +47,36 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { formatShortTeamName } from '../utils/teamNames'
+import type { Standing } from '../composables/useFFVBData'
 
-const props = defineProps({
-  standings: {
-    type: Array,
-    required: true
-  },
-  variant: {
-    type: String,
-    default: 'full',
-    validator: (v) => ['full', 'compact'].includes(v)
-  },
-  selectable: {
-    type: Boolean,
-    default: false
-  },
-  selectedTeam: {
-    type: String,
-    default: null
-  },
-  useShortNames: {
-    type: Boolean,
-    default: false
-  }
+interface Props {
+  standings: Standing[]
+  variant?: 'full' | 'compact'
+  selectable?: boolean
+  selectedTeam?: string | null
+  useShortNames?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  variant: 'full',
+  selectable: false,
+  selectedTeam: null,
+  useShortNames: false
 })
 
-const emit = defineEmits(['team-select'])
+const emit = defineEmits<{
+  'team-select': [team: string]
+}>()
 
-function handleRowClick(team) {
+function handleRowClick(team: string): void {
   if (props.selectable) {
     emit('team-select', team)
   }
 }
 
-function displayTeamName(team) {
+function displayTeamName(team: string): string {
   return props.useShortNames ? formatShortTeamName(team) : team
 }
 </script>

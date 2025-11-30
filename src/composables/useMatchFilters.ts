@@ -1,8 +1,26 @@
-import { ref, computed } from 'vue'
+import { ref, computed, type Ref, type ComputedRef } from 'vue'
+import type { Match } from './useFFVBData'
 
-export function useMatchFilters(matches) {
-  const selectedTeam = ref(null)
-  const sortOrder = ref('desc') // 'asc' or 'desc'
+export interface MatchGroup {
+  date: string
+  isPast: boolean
+  matches: Match[]
+}
+
+export interface UseMatchFiltersReturn {
+  selectedTeam: Ref<string | null>
+  sortOrder: Ref<'asc' | 'desc'>
+  filteredMatches: ComputedRef<Match[]>
+  matchesByDate: ComputedRef<MatchGroup[]>
+  pastMatches: ComputedRef<MatchGroup[]>
+  upcomingMatches: ComputedRef<Match[]>
+  selectTeam: (team: string) => void
+  toggleSortOrder: () => void
+}
+
+export function useMatchFilters(matches: Ref<Match[]>): UseMatchFiltersReturn {
+  const selectedTeam = ref<string | null>(null)
+  const sortOrder = ref<'asc' | 'desc'>('desc')
 
   const filteredMatches = computed(() => {
     if (!selectedTeam.value) return matches.value
@@ -13,7 +31,7 @@ export function useMatchFilters(matches) {
   })
 
   const matchesByDate = computed(() => {
-    const groups = {}
+    const groups: Record<string, MatchGroup> = {}
     const today = new Date()
     today.setHours(0, 0, 0, 0)
 
@@ -28,13 +46,13 @@ export function useMatchFilters(matches) {
           matches: []
         }
       }
-      groups[match.date].matches.push(match)
+      groups[match.date]!.matches.push(match)
     })
 
     const sorted = Object.values(groups).sort((a, b) => {
       const dateA = new Date(a.date)
       const dateB = new Date(b.date)
-      return sortOrder.value === 'desc' ? dateB - dateA : dateA - dateB
+      return sortOrder.value === 'desc' ? dateB.getTime() - dateA.getTime() : dateA.getTime() - dateB.getTime()
     })
 
     return sorted
@@ -54,14 +72,14 @@ export function useMatchFilters(matches) {
         matchDate.setHours(0, 0, 0, 0)
         return matchDate >= today
       })
-      .sort((a, b) => new Date(a.date) - new Date(b.date))
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
   })
 
-  function selectTeam(team) {
+  function selectTeam(team: string): void {
     selectedTeam.value = selectedTeam.value === team ? null : team
   }
 
-  function toggleSortOrder() {
+  function toggleSortOrder(): void {
     sortOrder.value = sortOrder.value === 'desc' ? 'asc' : 'desc'
   }
 

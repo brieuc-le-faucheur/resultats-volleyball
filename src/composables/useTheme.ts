@@ -9,12 +9,12 @@ export function useTheme() {
   const isDark = ref(savedTheme ? savedTheme === 'dark' : prefersDark)
 
   // Appliquer le thème au DOM
-  function applyTheme(dark) {
+  function applyTheme(dark: boolean): void {
     document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light')
   }
 
   // Toggle manuel
-  function toggleTheme() {
+  function toggleTheme(): void {
     isDark.value = !isDark.value
   }
 
@@ -27,7 +27,7 @@ export function useTheme() {
   // Écoute des changements système
   onMounted(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    const handler = (e) => {
+    const handler = (e: MediaQueryListEvent): void => {
       // Seulement si l'utilisateur n'a pas de préférence manuelle
       if (!localStorage.getItem('volleyball-theme')) {
         isDark.value = e.matches
