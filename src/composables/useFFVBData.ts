@@ -34,6 +34,15 @@ export interface UseFFVBDataReturn {
   reload: () => Promise<void>
 }
 
+interface CachedData {
+  matches: Match[]
+  standings: Standing[]
+  timestamp: number
+}
+
+// Cache duration: 2 months in milliseconds
+const CACHE_DURATION = 2 * 30 * 24 * 60 * 60 * 1000
+
 export function useFFVBData(): UseFFVBDataReturn {
   const matches = ref<Match[]>([])
   const standings = ref<Standing[]>([])
@@ -54,9 +63,60 @@ export function useFFVBData(): UseFFVBDataReturn {
     return `20${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
   }
 
+  function getCacheKey(): string {
+    return `ffvb-data-${selectedCompetitionId.value}-${selectedPoolCode.value}`
+  }
+
+  function loadFromCache(): CachedData | null {
+    try {
+      const cacheKey = getCacheKey()
+      const cached = localStorage.getItem(cacheKey)
+      if (!cached) return null
+
+      const data: CachedData = JSON.parse(cached)
+      const now = Date.now()
+
+      // Vérifier si le cache est encore valide
+      if (now - data.timestamp > CACHE_DURATION) {
+        localStorage.removeItem(cacheKey)
+        return null
+      }
+
+      return data
+    } catch (err) {
+      console.error('Erreur lors de la lecture du cache:', err)
+      return null
+    }
+  }
+
+  function saveToCache(matchesData: Match[], standingsData: Standing[]): void {
+    try {
+      const cacheKey = getCacheKey()
+      const data: CachedData = {
+        matches: matchesData,
+        standings: standingsData,
+        timestamp: Date.now()
+      }
+      localStorage.setItem(cacheKey, JSON.stringify(data))
+    } catch (err) {
+      console.error('Erreur lors de la sauvegarde du cache:', err)
+    }
+  }
+
   async function loadData(): Promise<void> {
     loading.value = true
     error.value = null
+
+    // Essayer de charger depuis le cache d'abord
+    const cached = loadFromCache()
+    if (cached) {
+      console.log('Données chargées depuis le cache')
+      matches.value = cached.matches
+      standings.value = cached.standings
+      loading.value = false
+      return
+    }
+
     try {
       // Utiliser l'URL dynamique au lieu de l'URL hardcodée
       const url = buildFFVBUrl()
@@ -78,6 +138,10 @@ export function useFFVBData(): UseFFVBDataReturn {
           played: match.played
         }
       })
+
+      // Sauvegarder dans le cache
+      saveToCache(matches.value, standings.value)
+      console.log('Données sauvegardées dans le cache')
     } catch (err) {
       console.error('Erreur lors du chargement des données FFVB:', err)
       error.value = err instanceof Error ? err : new Error('Unknown error')
