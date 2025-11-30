@@ -6,6 +6,17 @@ import CompetitionSelector from './CompetitionSelector.vue'
 
 const route = useRoute()
 const isCompactView = computed(() => route.name === 'compact')
+
+// Preserve query params when navigating between views
+const fullViewLink = computed(() => ({
+  path: '/full',
+  query: route.query
+}))
+
+const compactViewLink = computed(() => ({
+  path: '/compact',
+  query: route.query
+}))
 </script>
 
 <template>
@@ -24,8 +35,8 @@ const isCompactView = computed(() => route.name === 'compact')
 
       <nav class="nav-links">
         <ThemeToggle />
-        <router-link to="/full" class="nav-link">Vue complète</router-link>
-        <router-link to="/compact" class="nav-link">Vue compacte</router-link>
+        <router-link :to="fullViewLink" class="nav-link">Vue complète</router-link>
+        <router-link :to="compactViewLink" class="nav-link">Vue compacte</router-link>
       </nav>
     </div>
   </header>
