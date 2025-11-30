@@ -18,7 +18,7 @@ const isCompactView = computed(() => route.name === 'compact')
           </div>
         </div>
         <nav class="nav-links">
-          <router-link to="/" class="nav-link">Vue complète</router-link>
+          <router-link to="/full" class="nav-link">Vue complète</router-link>
           <router-link to="/compact" class="nav-link">Vue compacte</router-link>
         </nav>
       </div>

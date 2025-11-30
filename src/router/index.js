@@ -7,13 +7,17 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'dashboard',
-      component: VolleyballDashboard
+      redirect: '/compact'
     },
     {
       path: '/compact',
       name: 'compact',
       component: CompactView
+    },
+    {
+      path: '/full',
+      name: 'dashboard',
+      component: VolleyballDashboard
     }
   ]
 })
