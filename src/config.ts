@@ -23,7 +23,7 @@ export interface AppConfig {
 }
 
 export const config: AppConfig = {
-  dataMode: 'mock',
+  dataMode: 'live',
   mockServerUrl: 'http://localhost:3001/ffvb-data',
   corsProxy: 'https://cors-anywhere.com/',
 
