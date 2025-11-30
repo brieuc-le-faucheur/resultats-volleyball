@@ -40,8 +40,9 @@ interface CachedData {
   timestamp: number
 }
 
-// Cache duration: 2 months in milliseconds
-const CACHE_DURATION = 2 * 30 * 24 * 60 * 60 * 1000
+// Cache durations in milliseconds
+const RESULTS_CACHE_DURATION = 24 * 60 * 60 * 1000 // 1 day - for match results and standings (change frequently)
+const CONFIG_CACHE_DURATION = 2 * 30 * 24 * 60 * 60 * 1000 // 2 months - for competition/pool configs (rarely change)
 
 export function useFFVBData(): UseFFVBDataReturn {
   const matches = ref<Match[]>([])
@@ -76,8 +77,8 @@ export function useFFVBData(): UseFFVBDataReturn {
       const data: CachedData = JSON.parse(cached)
       const now = Date.now()
 
-      // Vérifier si le cache est encore valide
-      if (now - data.timestamp > CACHE_DURATION) {
+      // Vérifier si le cache est encore valide (1 jour pour les résultats)
+      if (now - data.timestamp > RESULTS_CACHE_DURATION) {
         localStorage.removeItem(cacheKey)
         return null
       }
