@@ -14,8 +14,8 @@ const isCompactView = computed(() => route.name === 'compact')
       <div class="logo-section">
         <div class="volleyball-icon">🏐</div>
         <div>
-          <h1>Volleyball Dashboard</h1>
-          <p v-if="!isCompactView" class="subtitle">Résultats et classement</p>
+          <h1>Résultats</h1>
+          <p v-if="!isCompactView" class="subtitle">Classement et matchs</p>
         </div>
       </div>
 
