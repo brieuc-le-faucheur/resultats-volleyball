@@ -95,7 +95,8 @@ export function parseMatches(html) {
     if (cells.length < 6) return
 
     const matchCode = cells[0].textContent.trim()
-    if (!matchCode.startsWith('DMAA')) return
+    // Skip if not a valid match code (should have at least 4 characters)
+    if (!matchCode || matchCode.length < 4) return
 
     const date = cells[1].textContent.trim()
     const time = cells[2].textContent.trim()
