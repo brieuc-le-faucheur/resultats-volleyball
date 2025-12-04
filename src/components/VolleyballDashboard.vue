@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useFFVBData } from '../composables/useFFVBData'
 import { useMatchFilters } from '../composables/useMatchFilters'
 import { useDateFormatting } from '../composables/useDateFormatting'
@@ -17,6 +17,15 @@ const {
 
 const { formatDateFull } = useDateFormatting()
 
+// Onglet actif pour mobile
+const activeTab = ref<'played' | 'upcoming'>('played')
+
+// Afficher le bouton retour en haut
+const showScrollTop = ref(false)
+
+// Ref pour la section matchs à venir
+const upcomingSection = ref<HTMLElement | null>(null)
+
 const selectedTeamStats = computed(() => {
   if (!selectedTeam.value) return null
   return standings.value.find(s => s.team === selectedTeam.value)
@@ -32,6 +41,26 @@ const upcomingMatchesByDate = computed(() => {
 
 const filteredMatches = computed(() => {
   return matchesByDate.value.flatMap(group => group.matches)
+})
+
+function handleScroll() {
+  showScrollTop.value = window.scrollY > 300
+}
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+function scrollToUpcoming() {
+  upcomingSection.value?.scrollIntoView({ behavior: 'smooth' })
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
 })
 </script>
 
@@ -92,15 +121,40 @@ const filteredMatches = computed(() => {
             <span class="title-icon">🏐</span>
             {{ selectedTeam ? `Matchs de ${selectedTeam}` : 'Tous les matchs' }}
           </h2>
-          <button @click="toggleSortOrder" class="sort-button">
-            <span class="sort-icon">{{ sortOrder === 'desc' ? '↓' : '↑' }}</span>
-            {{ sortOrder === 'desc' ? 'Plus récent en premier' : 'Plus ancien en premier' }}
+          <div class="matches-actions">
+            <button
+              v-if="upcomingMatchesByDate.length > 0"
+              @click="scrollToUpcoming"
+              class="goto-upcoming-btn desktop-only"
+            >
+              Matchs à venir ↓
+            </button>
+            <button @click="toggleSortOrder" class="sort-button">
+              <span class="sort-icon">{{ sortOrder === 'desc' ? '↓' : '↑' }}</span>
+              {{ sortOrder === 'desc' ? 'Plus récent' : 'Plus ancien' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Onglets mobile -->
+        <div class="mobile-tabs">
+          <button
+            :class="['tab', { active: activeTab === 'played' }]"
+            @click="activeTab = 'played'"
+          >
+            Joués ({{ pastMatchesByDate.reduce((acc, g) => acc + g.matches.length, 0) }})
+          </button>
+          <button
+            :class="['tab', { active: activeTab === 'upcoming' }]"
+            @click="activeTab = 'upcoming'"
+          >
+            À venir ({{ upcomingMatchesByDate.reduce((acc, g) => acc + g.matches.length, 0) }})
           </button>
         </div>
 
         <!-- Matchs joués -->
-        <div v-if="pastMatchesByDate.length > 0" class="matches-group">
-          <h3 class="matches-group-title">Matchs joués</h3>
+        <div v-if="pastMatchesByDate.length > 0" class="matches-group" :class="{ 'mobile-hidden': activeTab !== 'played' }">
+          <h3 class="matches-group-title desktop-only">Matchs joués</h3>
           <div
             v-for="dateGroup in pastMatchesByDate"
             :key="dateGroup.date"
@@ -123,8 +177,13 @@ const filteredMatches = computed(() => {
         </div>
 
         <!-- Matchs à venir -->
-        <div v-if="upcomingMatchesByDate.length > 0" class="matches-group">
-          <h3 class="matches-group-title">Matchs à venir</h3>
+        <div
+          v-if="upcomingMatchesByDate.length > 0"
+          ref="upcomingSection"
+          class="matches-group"
+          :class="{ 'mobile-hidden': activeTab !== 'upcoming' }"
+        >
+          <h3 class="matches-group-title desktop-only">Matchs à venir</h3>
           <div
             v-for="dateGroup in upcomingMatchesByDate"
             :key="dateGroup.date"
@@ -151,6 +210,16 @@ const filteredMatches = computed(() => {
         </div>
       </section>
     </div>
+
+    <!-- Bouton retour en haut -->
+    <button
+      v-show="showScrollTop"
+      @click="scrollToTop"
+      class="scroll-top-btn"
+      aria-label="Retour en haut"
+    >
+      ↑
+    </button>
   </div>
 </template>
 
@@ -277,8 +346,8 @@ const filteredMatches = computed(() => {
   gap: 1rem;
 }
 
-.sort-button {
-  background: var(--color-primary);
+.sort-button,
+.goto-upcoming-btn {
   color: white;
   border: none;
   padding: var(--space-sm) var(--space-md);
@@ -287,9 +356,14 @@ const filteredMatches = computed(() => {
   cursor: pointer;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--space-sm);
   transition: all 0.2s;
   font-size: var(--font-size-xs);
+}
+
+.sort-button {
+  background: var(--color-primary);
 }
 
 .sort-button:hover {
@@ -299,7 +373,7 @@ const filteredMatches = computed(() => {
 }
 
 .sort-icon {
-  font-size: 1.25rem;
+  font-size: 1rem;
 }
 
 .matches-group {
@@ -349,6 +423,94 @@ const filteredMatches = computed(() => {
   font-size: 1.125rem;
 }
 
+/* Matches actions */
+.matches-actions {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+/* Onglets mobile */
+.mobile-tabs {
+  display: flex;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+  background: var(--color-background);
+  padding: var(--space-xs);
+  border-radius: 0.5rem;
+}
+
+.mobile-tabs .tab {
+  flex: 1;
+  padding: var(--space-sm) var(--space-md);
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mobile-tabs .tab.active {
+  background: var(--color-primary);
+  color: white;
+}
+
+.mobile-hidden {
+  display: none;
+}
+
+/* Desktop only */
+.desktop-only {
+  display: none;
+}
+
+/* Bouton aller aux matchs à venir */
+.goto-upcoming-btn {
+  background: var(--color-secondary);
+}
+
+.goto-upcoming-btn:hover {
+  background: var(--color-secondary-dark, #0891b2);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+/* Bouton retour en haut */
+.scroll-top-btn {
+  position: fixed;
+  bottom: 5rem;
+  right: var(--space-md);
+  width: 44px;
+  height: 44px;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  transition: all 0.2s;
+  z-index: 100;
+}
+
+.scroll-top-btn:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-2px);
+}
+
+@media (min-width: 768px) {
+  .scroll-top-btn {
+    width: 52px;
+    height: 52px;
+    font-size: 1.5rem;
+    right: var(--space-xl);
+  }
+}
+
 /* md: 768px+ */
 @media (min-width: 768px) {
   .standings-section,
@@ -386,9 +548,29 @@ const filteredMatches = computed(() => {
     font-size: 0.875rem;
   }
 
-  .sort-button {
+  .sort-button,
+  .goto-upcoming-btn {
     font-size: 0.875rem;
     padding: 0.75rem 1.5rem;
+  }
+
+  /* Cacher les onglets mobile */
+  .mobile-tabs {
+    display: none;
+  }
+
+  /* Afficher les éléments desktop */
+  .desktop-only {
+    display: block;
+  }
+
+  button.desktop-only {
+    display: inline-flex;
+  }
+
+  /* Annuler le masquage mobile */
+  .mobile-hidden {
+    display: block;
   }
 }
 </style>
