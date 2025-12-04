@@ -170,22 +170,24 @@ onUnmounted(() => {
   color: white;
 }
 
-/* Mobile */
+/* Mobile - pleine largeur sous le header */
 @media (max-width: 767px) {
   .favorites-dropdown {
     position: fixed;
     top: auto;
-    bottom: 0;
     left: 0;
     right: 0;
-    margin-top: 0;
+    margin-top: 0.5rem;
     max-width: none;
-    border-radius: 1rem 1rem 0 0;
-    max-height: 60vh;
+    min-width: auto;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   }
 
   .favorites-list {
-    max-height: calc(60vh - 60px);
+    max-height: 50vh;
   }
 }
 </style>

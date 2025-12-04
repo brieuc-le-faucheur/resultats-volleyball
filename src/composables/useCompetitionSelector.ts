@@ -13,7 +13,7 @@ export interface UseCompetitionSelectorReturn {
   selectedPool: Ref<Pool | undefined>
   availablePools: Ref<Pool[]>
   poolsLoading: Ref<boolean>
-  selectCompetition: (competitionId: string, saison: string) => void
+  selectCompetition: (competitionId: string, saison: string, targetPoolCode?: string) => Promise<void>
   selectPool: (poolCode: string) => void
   buildFFVBUrl: () => string
 }

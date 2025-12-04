@@ -8,8 +8,6 @@ const {
   selectedCompetitionId,
   selectedSaison,
   selectedPoolCode,
-  selectedCompetition,
-  selectedPool,
   availablePools,
   poolsLoading,
   selectCompetition,

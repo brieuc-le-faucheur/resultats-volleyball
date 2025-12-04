@@ -47,30 +47,38 @@ const compactViewLink = computed(() => ({
 <template>
   <header class="app-header">
     <div class="header-content">
-      <!-- Logo + Favoris -->
+      <!-- Logo -->
       <div class="logo-section">
         <div class="volleyball-icon">🏐</div>
         <h1>Résultats</h1>
-        <div class="favorites-wrapper">
-          <FavoriteButton :is-active="dropdownOpen" @toggle="toggleDropdown" />
-          <FavoritesDropdown
-            v-if="dropdownOpen"
-            :favorites="favorites"
-            @close="closeDropdown"
-            @navigate="navigateToPool"
-            @remove="handleRemove"
-          />
+      </div>
+
+      <!-- Sélecteurs + Favoris -->
+      <div class="selectors-section">
+        <CompetitionSelector />
+        <div class="favorites-group">
+          <label>Favoris</label>
+          <div class="favorites-wrapper">
+            <FavoriteButton :is-active="dropdownOpen" @toggle="toggleDropdown" />
+            <FavoritesDropdown
+              v-if="dropdownOpen"
+              :favorites="favorites"
+              @close="closeDropdown"
+              @navigate="navigateToPool"
+              @remove="handleRemove"
+            />
+          </div>
         </div>
       </div>
 
-      <!-- Sélecteurs + Navigation -->
-      <div class="header-controls">
-        <CompetitionSelector />
-        <nav class="nav-links desktop-only">
-          <router-link :to="fullViewLink" class="nav-link">Vue complète</router-link>
-          <router-link :to="compactViewLink" class="nav-link">Vue compacte</router-link>
-        </nav>
-      </div>
+      <!-- Toggle vue (desktop only) -->
+      <router-link
+        :to="isCompactView ? fullViewLink : compactViewLink"
+        class="view-toggle-btn"
+        :title="isCompactView ? 'Vue classique' : 'Vue compacte'"
+      >
+        {{ isCompactView ? 'Vue classique' : 'Vue compacte' }}
+      </router-link>
     </div>
   </header>
 </template>
@@ -104,14 +112,28 @@ const compactViewLink = computed(() => ({
   justify-content: center;
 }
 
-.favorites-wrapper {
-  position: relative;
-}
-
-.header-controls {
+.selectors-section {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
+}
+
+.favorites-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.favorites-group label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.favorites-wrapper {
+  position: relative;
 }
 
 .volleyball-icon {
@@ -137,38 +159,31 @@ h1 {
   background-clip: text;
 }
 
-.nav-links {
-  display: flex;
-  gap: var(--space-sm);
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.nav-link {
-  padding: var(--space-sm) var(--space-md);
-  border-radius: 0.5rem;
-  color: var(--color-text-muted);
-  text-decoration: none;
-  font-weight: 500;
-  font-size: var(--font-size-sm);
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
 .desktop-only {
   display: none;
 }
 
-.nav-link:hover {
+/* Bouton toggle vue - caché en mobile */
+.view-toggle-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  margin-left: auto;
   background: var(--color-surface-light);
+  border: 1px solid var(--color-border);
+  border-radius: 0.375rem;
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
   color: var(--color-text);
+  white-space: nowrap;
+  transition: all 0.2s;
 }
 
-.nav-link.router-link-active {
+.view-toggle-btn:hover {
   background: var(--color-primary);
+  border-color: var(--color-primary);
   color: white;
 }
 
@@ -186,6 +201,18 @@ h1 {
   .volleyball-icon {
     font-size: 2rem;
   }
+
+  .selectors-section {
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .favorites-group {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+  }
 }
 
 /* lg: 1024px+ - Tout sur une ligne */
@@ -202,6 +229,10 @@ h1 {
     gap: 0.75rem;
   }
 
+  .selectors-section {
+    flex: 1;
+  }
+
   .volleyball-icon {
     font-size: 2rem;
   }
@@ -210,25 +241,11 @@ h1 {
     font-size: 1.5rem;
   }
 
-  .header-controls {
-    flex: 1;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 1rem;
-  }
-
-  .nav-links {
-    flex-shrink: 0;
-    gap: 0.5rem;
-  }
-
-  .nav-link {
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-  }
-
   .desktop-only {
+    display: flex;
+  }
+
+  .view-toggle-btn {
     display: flex;
   }
 }
