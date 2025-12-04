@@ -47,12 +47,10 @@ const compactViewLink = computed(() => ({
 <template>
   <header class="app-header">
     <div class="header-content">
+      <!-- Logo + Favoris -->
       <div class="logo-section">
         <div class="volleyball-icon">🏐</div>
-        <div>
-          <h1>Résultats</h1>
-          <p v-if="!isCompactView" class="subtitle">Classement et matchs</p>
-        </div>
+        <h1>Résultats</h1>
         <div class="favorites-wrapper">
           <FavoriteButton :is-active="dropdownOpen" @toggle="toggleDropdown" />
           <FavoritesDropdown
@@ -65,13 +63,14 @@ const compactViewLink = computed(() => ({
         </div>
       </div>
 
-      <!-- Sélecteur de compétition (visible dans toutes les vues) -->
-      <CompetitionSelector />
-
-      <nav class="nav-links desktop-only">
-        <router-link :to="fullViewLink" class="nav-link">Vue complète</router-link>
-        <router-link :to="compactViewLink" class="nav-link">Vue compacte</router-link>
-      </nav>
+      <!-- Sélecteurs + Navigation -->
+      <div class="header-controls">
+        <CompetitionSelector />
+        <nav class="nav-links desktop-only">
+          <router-link :to="fullViewLink" class="nav-link">Vue complète</router-link>
+          <router-link :to="compactViewLink" class="nav-link">Vue compacte</router-link>
+        </nav>
+      </div>
     </div>
   </header>
 </template>
@@ -101,13 +100,18 @@ const compactViewLink = computed(() => ({
 .logo-section {
   display: flex;
   align-items: center;
-  gap: var(--space-xs);
+  gap: var(--space-sm);
   justify-content: center;
 }
 
 .favorites-wrapper {
   position: relative;
-  margin-left: var(--space-xs);
+}
+
+.header-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
 }
 
 .volleyball-icon {
@@ -133,13 +137,6 @@ h1 {
   background-clip: text;
 }
 
-.subtitle {
-  color: var(--color-text-muted);
-  font-size: var(--font-size-xs);
-  margin-top: 0.25rem;
-  display: none;
-}
-
 .nav-links {
   display: flex;
   gap: var(--space-sm);
@@ -153,7 +150,7 @@ h1 {
   color: var(--color-text-muted);
   text-decoration: none;
   font-weight: 500;
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-sm);
   transition: all 0.2s;
   display: flex;
   align-items: center;
@@ -175,15 +172,11 @@ h1 {
   color: white;
 }
 
-/* md: 768px+ - Slightly larger header */
+/* md: 768px+ */
 @media (min-width: 768px) {
   .header-content {
     padding: var(--space-md);
     gap: var(--space-md);
-  }
-
-  .logo-section {
-    gap: var(--space-sm);
   }
 
   h1 {
@@ -195,42 +188,44 @@ h1 {
   }
 }
 
-/* lg: 1024px+ - Horizontal layout + show desktop elements */
+/* lg: 1024px+ - Tout sur une ligne */
 @media (min-width: 1024px) {
   .header-content {
     flex-direction: row;
-    justify-content: space-between;
     align-items: center;
-    padding: 1.5rem 2rem;
-    gap: 2rem;
+    padding: 1rem 2rem;
+    gap: 1.5rem;
   }
 
   .logo-section {
-    justify-content: flex-start;
-    gap: 1rem;
+    flex-shrink: 0;
+    gap: 0.75rem;
   }
 
   .volleyball-icon {
-    font-size: 3rem;
+    font-size: 2rem;
   }
 
   h1 {
-    font-size: 1.875rem;
+    font-size: 1.5rem;
   }
 
-  .subtitle {
-    display: block;
+  .header-controls {
+    flex: 1;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
   }
 
   .nav-links {
-    gap: 1rem;
-    justify-content: flex-end;
+    flex-shrink: 0;
+    gap: 0.5rem;
   }
 
   .nav-link {
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
-    flex: none;
   }
 
   .desktop-only {

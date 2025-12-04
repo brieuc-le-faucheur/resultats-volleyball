@@ -147,47 +147,53 @@ function handlePoolChange(event: Event): void {
 .competition-selector {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: var(--space-sm);
   align-items: stretch;
 }
 
 .selector-group {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: var(--space-xs);
   width: 100%;
 }
 
 label {
   font-size: var(--font-size-xs);
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .selector {
-  padding: var(--space-sm) var(--space-md);
-  border-radius: 0.5rem;
+  padding: 0.5rem 2rem 0.5rem 0.75rem;
+  border-radius: 0.375rem;
   border: 1px solid var(--color-border);
-  background: var(--color-surface);
+  background-color: var(--color-surface-light);
   color: var(--color-text);
   font-size: var(--font-size-sm);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
   width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%239ca3af' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 12px;
 }
 
 .selector:hover {
   border-color: var(--color-primary);
-  box-shadow: var(--shadow);
 }
 
 .selector:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 }
 
 .selector:disabled {
@@ -199,23 +205,25 @@ label {
 @media (min-width: 768px) {
   .competition-selector {
     flex-direction: row;
-    flex-wrap: wrap;
-    align-items: flex-end;
+    align-items: center;
     gap: 1rem;
   }
 
   .selector-group {
-    min-width: 200px;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
     width: auto;
   }
 
   label {
-    font-size: 0.875rem;
+    font-size: var(--font-size-xs);
+    white-space: nowrap;
   }
 
   .selector {
-    padding: 0.75rem 1rem;
     width: auto;
+    min-width: 180px;
   }
 }
 </style>
