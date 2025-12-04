@@ -34,9 +34,9 @@ const compactViewLink = computed(() => ({
       <CompetitionSelector />
 
       <nav class="nav-links">
-        <ThemeToggle />
-        <router-link :to="fullViewLink" class="nav-link">Vue complète</router-link>
-        <router-link :to="compactViewLink" class="nav-link">Vue compacte</router-link>
+        <ThemeToggle class="desktop-only" />
+        <router-link :to="fullViewLink" class="nav-link desktop-only">Vue complète</router-link>
+        <router-link :to="compactViewLink" class="nav-link desktop-only">Vue compacte</router-link>
       </nav>
     </div>
   </header>
@@ -121,6 +121,10 @@ h1 {
   min-width: 80px;
 }
 
+.desktop-only {
+  display: none;
+}
+
 .nav-link:hover {
   background: var(--color-surface-light);
   color: var(--color-text);
@@ -152,6 +156,10 @@ h1 {
   .nav-link {
     font-size: var(--font-size-sm);
     flex: none;
+  }
+
+  .desktop-only {
+    display: block;
   }
 }
 

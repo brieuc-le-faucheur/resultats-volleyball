@@ -2,6 +2,7 @@
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
 import AppHeader from './components/AppHeader.vue'
+import ThemeToggle from './components/ThemeToggle.vue'
 
 const route = useRoute()
 const isCompactView = computed(() => route.name === 'compact')
@@ -14,6 +15,10 @@ const isCompactView = computed(() => route.name === 'compact')
     <main class="app-main" :class="{ 'compact-main': isCompactView }">
       <router-view />
     </main>
+
+    <footer class="app-footer mobile-only">
+      <ThemeToggle />
+    </footer>
   </div>
 </template>
 
@@ -136,6 +141,24 @@ body {
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+.app-footer {
+  padding: var(--space-md);
+  display: flex;
+  justify-content: center;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+}
+
+.mobile-only {
+  display: flex;
+}
+
+@media (min-width: 480px) {
+  .mobile-only {
+    display: none;
   }
 }
 
