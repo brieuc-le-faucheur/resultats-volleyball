@@ -50,7 +50,7 @@ export function useFFVBData(): UseFFVBDataReturn {
   const error = ref<Error | null>(null)
 
   // Récupérer l'URL dynamique depuis le sélecteur de compétition
-  const { buildFFVBUrl, selectedCompetitionId, selectedPoolCode } = useCompetitionSelector()
+  const { buildFFVBUrl, selectedCompetitionId, selectedPoolCode, selectedPool } = useCompetitionSelector()
 
   function parseFFVBDate(dateStr: string): string {
     if (!dateStr || dateStr.trim() === '') return ''
@@ -104,6 +104,13 @@ export function useFFVBData(): UseFFVBDataReturn {
   }
 
   async function loadData(): Promise<void> {
+    // Ne pas charger si la pool n'est pas encore sélectionnée
+    const url = buildFFVBUrl()
+    if (!url) {
+      console.log('URL non disponible, attente de la sélection de pool...')
+      return
+    }
+
     loading.value = true
     error.value = null
 
@@ -119,7 +126,6 @@ export function useFFVBData(): UseFFVBDataReturn {
 
     try {
       // Utiliser l'URL dynamique au lieu de l'URL hardcodée
-      const url = buildFFVBUrl()
       const data = await fetchFFVBData(url)
       standings.value = data.standings
 
@@ -155,7 +161,8 @@ export function useFFVBData(): UseFFVBDataReturn {
   }
 
   // Recharger les données quand la sélection de compétition ou de poule change
-  watch([selectedCompetitionId, selectedPoolCode], () => {
+  // On surveille selectedPool (pas selectedPoolCode) car il faut attendre que la pool soit réellement disponible
+  watch([selectedCompetitionId, selectedPool], () => {
     loadData()
   })
 

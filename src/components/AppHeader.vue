@@ -1,10 +1,36 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import CompetitionSelector from './CompetitionSelector.vue'
+import FavoriteButton from './FavoriteButton.vue'
+import FavoritesDropdown from './FavoritesDropdown.vue'
+import { useFavoritePools, type FavoritePool } from '../composables/useFavoritePools'
+import { useCompetitionSelector } from '../composables/useCompetitionSelector'
 
 const route = useRoute()
 const isCompactView = computed(() => route.name === 'compact')
+
+const { favorites, removeFavorite } = useFavoritePools()
+const { selectCompetition } = useCompetitionSelector()
+
+const dropdownOpen = ref(false)
+
+function toggleDropdown() {
+  dropdownOpen.value = !dropdownOpen.value
+}
+
+function closeDropdown() {
+  dropdownOpen.value = false
+}
+
+async function navigateToPool(pool: FavoritePool) {
+  await selectCompetition(pool.competitionId, pool.saison, pool.poolCode)
+  closeDropdown()
+}
+
+function handleRemove(pool: FavoritePool) {
+  removeFavorite(pool.competitionId, pool.saison, pool.poolCode)
+}
 
 // Preserve query params when navigating between views
 const fullViewLink = computed(() => ({
@@ -26,6 +52,16 @@ const compactViewLink = computed(() => ({
         <div>
           <h1>Résultats</h1>
           <p v-if="!isCompactView" class="subtitle">Classement et matchs</p>
+        </div>
+        <div class="favorites-wrapper">
+          <FavoriteButton :is-active="dropdownOpen" @toggle="toggleDropdown" />
+          <FavoritesDropdown
+            v-if="dropdownOpen"
+            :favorites="favorites"
+            @close="closeDropdown"
+            @navigate="navigateToPool"
+            @remove="handleRemove"
+          />
         </div>
       </div>
 
@@ -67,6 +103,11 @@ const compactViewLink = computed(() => ({
   align-items: center;
   gap: var(--space-xs);
   justify-content: center;
+}
+
+.favorites-wrapper {
+  position: relative;
+  margin-left: var(--space-xs);
 }
 
 .volleyball-icon {

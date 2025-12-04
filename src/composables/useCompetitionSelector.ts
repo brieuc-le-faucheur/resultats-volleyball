@@ -119,7 +119,7 @@ function createCompetitionSelector(): UseCompetitionSelectorReturn {
   }
 
   // Actions
-  async function selectCompetition(competitionId: string, saison: string): Promise<void> {
+  async function selectCompetition(competitionId: string, saison: string, targetPoolCode?: string): Promise<void> {
     selectedCompetitionId.value = competitionId
     selectedSaison.value = saison
     const comp = competitions.value.find(c => c.id === competitionId && c.saison === saison)
@@ -127,9 +127,11 @@ function createCompetitionSelector(): UseCompetitionSelectorReturn {
       // Load pools if not already loaded
       await loadPools(comp)
 
-      // Reset pool to first available
+      // Use target pool if specified, otherwise reset to first available
       const pools = availablePools.value
-      if (pools.length > 0) {
+      if (targetPoolCode && pools.some(p => p.code === targetPoolCode)) {
+        selectedPoolCode.value = targetPoolCode
+      } else if (pools.length > 0) {
         selectedPoolCode.value = pools[0]!.code
       }
     }

@@ -2,11 +2,43 @@
 import { computed } from 'vue'
 import { useFFVBData } from '../composables/useFFVBData'
 import { useMatchFilters } from '../composables/useMatchFilters'
+import { useCompetitionSelector } from '../composables/useCompetitionSelector'
+import { useFavoritePools } from '../composables/useFavoritePools'
 import StandingsTable from './StandingsTable.vue'
 import MatchCard from './MatchCard.vue'
+import FavoriteButton from './FavoriteButton.vue'
 
 const { matches, standings, loading } = useFFVBData()
 const { upcomingMatches } = useMatchFilters(matches)
+const {
+  selectedCompetitionId,
+  selectedSaison,
+  selectedPoolCode,
+  selectedCompetition,
+  selectedPool
+} = useCompetitionSelector()
+
+const { isFavorite, toggleFavorite } = useFavoritePools()
+
+const isCurrentPoolFavorite = computed(() => {
+  if (!selectedPool.value || !selectedCompetition.value) return false
+  return isFavorite(
+    selectedCompetitionId.value,
+    selectedSaison.value,
+    selectedPoolCode.value
+  )
+})
+
+function toggleCurrentPoolFavorite() {
+  if (!selectedPool.value || !selectedCompetition.value) return
+  toggleFavorite({
+    competitionId: selectedCompetitionId.value,
+    saison: selectedSaison.value,
+    poolCode: selectedPoolCode.value,
+    poolName: selectedPool.value.name,
+    competitionName: selectedCompetition.value.name
+  })
+}
 
 // Limiter aux 8 prochains matchs pour vue compacte
 const limitedUpcomingMatches = computed(() => {
@@ -24,7 +56,16 @@ const limitedUpcomingMatches = computed(() => {
     <div v-else class="compact-grid">
       <!-- Classement -->
       <section class="standings-panel">
-        <h2 class="panel-title">Classement DMA</h2>
+        <h2 class="panel-title">
+          Classement
+          <span v-if="selectedPool" class="pool-name">- {{ selectedPool.name }}</span>
+          <FavoriteButton
+            v-if="selectedPool"
+            :is-active="isCurrentPoolFavorite"
+            size="sm"
+            @toggle="toggleCurrentPoolFavorite"
+          />
+        </h2>
         <div class="standings-compact">
           <StandingsTable
             :standings="standings"
@@ -108,6 +149,16 @@ const limitedUpcomingMatches = computed(() => {
   margin-bottom: var(--space-sm);
   color: var(--color-text);
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.pool-name {
+  font-weight: 500;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
 }
 
 .standings-compact {

@@ -8,6 +8,8 @@ const {
   selectedCompetitionId,
   selectedSaison,
   selectedPoolCode,
+  selectedCompetition,
+  selectedPool,
   availablePools,
   poolsLoading,
   selectCompetition,
@@ -107,7 +109,7 @@ function handlePoolChange(event: Event): void {
     </div>
 
     <!-- Sélecteur de poule -->
-    <div class="selector-group">
+    <div class="selector-group pool-group">
       <label for="pool-select">Poule</label>
       <select
         id="pool-select"
