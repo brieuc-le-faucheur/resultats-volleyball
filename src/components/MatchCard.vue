@@ -281,14 +281,13 @@ function displayTeamName(team: string): string {
 
 .match-teams .team-name {
   font-size: var(--font-size-sm);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 70%;
+  flex: 1;
+  min-width: 0;
 }
 
 .match-teams .score {
   font-size: var(--font-size-xl);
+  flex-shrink: 0;
 }
 
 /* sm: 480px+ - Restore horizontal layout */
