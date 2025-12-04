@@ -28,12 +28,12 @@
         <span class="match-time">{{ match.time }}</span>
       </div>
       <div class="match-teams">
-        <div class="team" :class="{ 'winner': match.played && match.scoreA !== null && match.scoreB !== null && match.scoreA > match.scoreB }">
+        <div class="team" :class="getTeamClass(match.teamA, match.scoreA, match.scoreB)">
           <span class="team-name">{{ displayTeamName(match.teamA) }}</span>
           <span v-if="match.played" class="score">{{ match.scoreA }}</span>
         </div>
         <div class="vs">VS</div>
-        <div class="team" :class="{ 'winner': match.played && match.scoreA !== null && match.scoreB !== null && match.scoreB > match.scoreA }">
+        <div class="team" :class="getTeamClass(match.teamB, match.scoreB, match.scoreA)">
           <span class="team-name">{{ displayTeamName(match.teamB) }}</span>
           <span v-if="match.played" class="score">{{ match.scoreB }}</span>
         </div>
@@ -56,13 +56,32 @@ interface Props {
   variant?: 'full' | 'compact'
   useShortNames?: boolean
   dateFormatter?: ((date: string) => string) | null
+  selectedTeam?: string | null
 }
 
 const props = withDefaults(defineProps<Props>(), {
   variant: 'full',
   useShortNames: false,
-  dateFormatter: null
+  dateFormatter: null,
+  selectedTeam: null
 })
+
+// Calcul du style pour l'équipe sélectionnée
+function getTeamClass(team: string, score: number | null, opponentScore: number | null): Record<string, boolean> {
+  const isWinner = props.match.played && score !== null && opponentScore !== null && score > opponentScore
+  const isSelected = props.selectedTeam === team
+
+  if (isSelected && props.match.played && score !== null && opponentScore !== null) {
+    return {
+      'selected-win': score > opponentScore,
+      'selected-loss': score < opponentScore
+    }
+  }
+
+  return {
+    'winner': isWinner && !props.selectedTeam
+  }
+}
 
 const { formatDateFull, formatDateCompact } = useDateFormatting()
 
@@ -188,9 +207,15 @@ function displayTeamName(team: string): string {
   transition: all 0.2s;
 }
 
-.match-teams .team.winner {
-  background: rgba(16, 185, 129, 0.1);
+.match-teams .team.winner,
+.match-teams .team.selected-win {
+  background: rgba(16, 185, 129, 0.15);
   border-color: var(--color-win);
+}
+
+.match-teams .team.selected-loss {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: var(--color-loss);
 }
 
 .match-teams .team-name {

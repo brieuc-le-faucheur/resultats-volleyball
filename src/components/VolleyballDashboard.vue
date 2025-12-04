@@ -116,6 +116,7 @@ const filteredMatches = computed(() => {
                 :match="match"
                 variant="full"
                 :use-short-names="false"
+                :selected-team="selectedTeam"
               />
             </div>
           </div>
@@ -139,6 +140,7 @@ const filteredMatches = computed(() => {
                 :match="match"
                 variant="full"
                 :use-short-names="false"
+                :selected-team="selectedTeam"
               />
             </div>
           </div>
