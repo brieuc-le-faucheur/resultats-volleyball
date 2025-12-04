@@ -67,8 +67,8 @@ function parsePoolsFromHTML(html: string): Pool[] {
     }
 
     // Extract pool links
-    // Format: <a href='vbspo_calendrier.php?saison=2025/2026&codent=PTBR35&poule=XXX' target='_parent'>XXX NOM</a>
-    const linkRegex = /<a href='vbspo_calendrier\.php\?[^']*poule=([A-Z0-9]+)'[^>]*>([^<]+)<\/a>/g
+    // Format: <a href="vbspo_calendrier.php?saison=2025/2026&codent=PTBR35&poule=XXX">XXX NOM</a>
+    const linkRegex = /<a href=["']vbspo_calendrier\.php\?[^"']*poule=([A-Z0-9]+)["'][^>]*>([^<]+)<\/a>/gi
     let match: RegExpExecArray | null
 
     while ((match = linkRegex.exec(section)) !== null) {

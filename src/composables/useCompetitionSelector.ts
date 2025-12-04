@@ -144,7 +144,7 @@ function createCompetitionSelector(): UseCompetitionSelectorReturn {
     const pool = selectedPool.value
     if (!comp || !pool) return ''
 
-    return `https://www.ffvbbeach.org/ffvbapp/resu/vbspo_calendrier.php?saison=${encodeURIComponent(comp.saison)}&codent=${comp.codent}&poule=${pool.code}`
+    return `https://www.ffvbbeach.org/ffvbapp/resu/vbspo_calendrier.php?saison=${encodeURIComponent(comp.saison)}&codent=${comp.codent}&poule=${pool.code}&calend=COMPLET`
   }
 
   // Initialize - load pools for selected competition
