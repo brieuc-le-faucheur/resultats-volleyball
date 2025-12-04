@@ -277,12 +277,17 @@ function displayTeamName(team: string): string {
 
 .match-teams .team {
   padding: var(--space-sm) var(--space-md);
+  gap: var(--space-md);
+  width: 100%;
 }
 
 .match-teams .team-name {
   font-size: var(--font-size-sm);
   flex: 1;
   min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .match-teams .score {
@@ -316,12 +321,15 @@ function displayTeamName(team: string): string {
 
   .match-teams .team {
     padding: 1rem;
+    width: auto;
   }
 
   .match-teams .team-name {
     font-size: 1rem;
     max-width: none;
     white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
   }
 
   .match-teams .score {
