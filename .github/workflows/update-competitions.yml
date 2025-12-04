@@ -1,0 +1,48 @@
+name: Update FFVB Competitions
+
+on:
+  schedule:
+    # Run at 00:00 on the first day of each month
+    - cron: '0 0 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-competitions:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Extract competitions from FFVB
+        run: npm run extract-competitions
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet src/data/competitions.json; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push changes
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add src/data/competitions.json
+          git commit -m "🔄 Update FFVB competitions list"
+          git push
