@@ -60,7 +60,9 @@ const selectedCompetitionKey = computed(() => `${selectedCompetitionId.value}|${
 function handleCompetitionChange(event: Event): void {
   const target = event.target as HTMLSelectElement
   const [competitionId, saison] = target.value.split('|')
-  selectCompetition(competitionId, saison)
+  if (competitionId && saison) {
+    selectCompetition(competitionId, saison)
+  }
   searchQuery.value = ''
 }
 

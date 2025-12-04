@@ -62,7 +62,7 @@ function parsePoolsFromHTML(html: string): Pool[] {
   sections.forEach(section => {
     // Extract category name
     const categoryMatch = section.match(/^([^<]+)<\/a>/)
-    if (categoryMatch) {
+    if (categoryMatch?.[1]) {
       currentCategory = categoryMatch[1].trim()
     }
 
@@ -73,16 +73,17 @@ function parsePoolsFromHTML(html: string): Pool[] {
 
     while ((match = linkRegex.exec(section)) !== null) {
       const code = match[1]
-      const fullText = match[2].trim()
+      const fullText = match[2]
+      if (!code || !fullText) continue
 
       // Extract name without code prefix
       // Format: "XXX NOM DE LA POULE"
-      const nameMatch = fullText.match(/^[A-Z0-9]+\s+(.+)$/)
-      const name = nameMatch ? nameMatch[1] : fullText
+      const nameMatch = fullText.trim().match(/^[A-Z0-9]+\s+(.+)$/)
+      const name = nameMatch?.[1] ?? fullText.trim()
 
       pools.push({
         code,
-        name: name.trim(),
+        name,
         category: currentCategory || undefined
       })
     }

@@ -40,9 +40,8 @@ interface CachedData {
   timestamp: number
 }
 
-// Cache durations in milliseconds
+// Cache duration in milliseconds
 const RESULTS_CACHE_DURATION = 24 * 60 * 60 * 1000 // 1 day - for match results and standings (change frequently)
-const CONFIG_CACHE_DURATION = 2 * 30 * 24 * 60 * 60 * 1000 // 2 months - for competition/pool configs (rarely change)
 
 export function useFFVBData(): UseFFVBDataReturn {
   const matches = ref<Match[]>([])
