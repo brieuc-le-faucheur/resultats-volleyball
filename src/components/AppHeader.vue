@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
-import ThemeToggle from './ThemeToggle.vue'
 import CompetitionSelector from './CompetitionSelector.vue'
 
 const route = useRoute()
@@ -33,10 +32,9 @@ const compactViewLink = computed(() => ({
       <!-- Sélecteur de compétition (visible dans toutes les vues) -->
       <CompetitionSelector />
 
-      <nav class="nav-links">
-        <ThemeToggle class="desktop-only" />
-        <router-link :to="fullViewLink" class="nav-link desktop-only">Vue complète</router-link>
-        <router-link :to="compactViewLink" class="nav-link desktop-only">Vue compacte</router-link>
+      <nav class="nav-links desktop-only">
+        <router-link :to="fullViewLink" class="nav-link">Vue complète</router-link>
+        <router-link :to="compactViewLink" class="nav-link">Vue compacte</router-link>
       </nav>
     </div>
   </header>
@@ -57,22 +55,22 @@ const compactViewLink = computed(() => ({
 .header-content {
   max-width: 1600px;
   margin: 0 auto;
-  padding: var(--space-md);
+  padding: var(--space-sm);
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: var(--space-md);
+  gap: var(--space-sm);
 }
 
 .logo-section {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-xs);
   justify-content: center;
 }
 
 .volleyball-icon {
-  font-size: 2rem;
+  font-size: 1.5rem;
   animation: bounce 2s infinite;
 }
 
@@ -86,7 +84,7 @@ const compactViewLink = computed(() => ({
 }
 
 h1 {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-lg);
   font-weight: 700;
   background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
   -webkit-background-clip: text;
@@ -116,9 +114,10 @@ h1 {
   font-weight: 500;
   font-size: var(--font-size-xs);
   transition: all 0.2s;
-  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  min-width: 80px;
 }
 
 .desktop-only {
@@ -135,35 +134,27 @@ h1 {
   color: white;
 }
 
-/* sm: 480px+ */
-@media (min-width: 480px) {
+/* md: 768px+ - Slightly larger header */
+@media (min-width: 768px) {
   .header-content {
-    gap: var(--space-lg);
+    padding: var(--space-md);
+    gap: var(--space-md);
+  }
+
+  .logo-section {
+    gap: var(--space-sm);
   }
 
   h1 {
-    font-size: var(--font-size-2xl);
+    font-size: var(--font-size-xl);
   }
 
   .volleyball-icon {
-    font-size: 2.5rem;
-  }
-
-  .subtitle {
-    display: block;
-  }
-
-  .nav-link {
-    font-size: var(--font-size-sm);
-    flex: none;
-  }
-
-  .desktop-only {
-    display: block;
+    font-size: 2rem;
   }
 }
 
-/* lg: 1024px+ - Horizontal layout */
+/* lg: 1024px+ - Horizontal layout + show desktop elements */
 @media (min-width: 1024px) {
   .header-content {
     flex-direction: row;
@@ -186,6 +177,10 @@ h1 {
     font-size: 1.875rem;
   }
 
+  .subtitle {
+    display: block;
+  }
+
   .nav-links {
     gap: 1rem;
     justify-content: flex-end;
@@ -194,6 +189,11 @@ h1 {
   .nav-link {
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
+    flex: none;
+  }
+
+  .desktop-only {
+    display: flex;
   }
 }
 </style>

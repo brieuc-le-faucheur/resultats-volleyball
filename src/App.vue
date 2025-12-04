@@ -16,7 +16,7 @@ const isCompactView = computed(() => route.name === 'compact')
       <router-view />
     </main>
 
-    <footer class="app-footer mobile-only">
+    <footer class="app-footer">
       <ThemeToggle />
     </footer>
   </div>
@@ -156,7 +156,7 @@ body {
   display: flex;
 }
 
-@media (min-width: 480px) {
+@media (min-width: 1024px) {
   .mobile-only {
     display: none;
   }
