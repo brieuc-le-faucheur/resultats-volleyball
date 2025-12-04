@@ -199,4 +199,76 @@ function displayTeamName(team: string): string {
 .variant-compact .points-col {
   font-size: 1rem;
 }
+
+/* Mobile-first responsive styles */
+
+/* Mobile base styles */
+.standings-table th,
+.standings-table td {
+  padding: var(--space-sm) var(--space-xs);
+  font-size: var(--font-size-xs);
+}
+
+.pos-col {
+  width: 35px;
+}
+
+.team-col {
+  min-width: 80px;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.position-badge {
+  width: 22px;
+  height: 22px;
+  font-size: 0.65rem;
+}
+
+/* sm: 480px+ */
+@media (min-width: 480px) {
+  .standings-table th,
+  .standings-table td {
+    padding: var(--space-sm);
+    font-size: var(--font-size-sm);
+  }
+
+  .team-col {
+    min-width: 100px;
+    max-width: 150px;
+  }
+
+  .position-badge {
+    width: 24px;
+    height: 24px;
+    font-size: 0.7rem;
+  }
+}
+
+/* md: 768px+ */
+@media (min-width: 768px) {
+  .standings-table th,
+  .standings-table td {
+    padding: 0.75rem 0.5rem;
+    font-size: inherit;
+  }
+
+  .pos-col {
+    width: 50px;
+  }
+
+  .team-col {
+    min-width: 150px;
+    max-width: none;
+    white-space: normal;
+  }
+
+  .position-badge {
+    width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+  }
+}
 </style>

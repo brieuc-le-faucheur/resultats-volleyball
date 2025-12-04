@@ -43,6 +43,7 @@ const compactViewLink = computed(() => ({
 </template>
 
 <style scoped>
+/* Mobile-first base styles */
 .app-header {
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
@@ -56,22 +57,22 @@ const compactViewLink = computed(() => ({
 .header-content {
   max-width: 1600px;
   margin: 0 auto;
-  padding: 1.5rem 2rem;
+  padding: var(--space-md);
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 2rem;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-md);
 }
 
 .logo-section {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--space-sm);
+  justify-content: center;
 }
 
 .volleyball-icon {
-  font-size: 3rem;
+  font-size: 2rem;
   animation: bounce 2s infinite;
 }
 
@@ -85,7 +86,7 @@ const compactViewLink = computed(() => ({
 }
 
 h1 {
-  font-size: 1.875rem;
+  font-size: var(--font-size-xl);
   font-weight: 700;
   background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
   -webkit-background-clip: text;
@@ -95,23 +96,29 @@ h1 {
 
 .subtitle {
   color: var(--color-text-muted);
-  font-size: 0.875rem;
+  font-size: var(--font-size-xs);
   margin-top: 0.25rem;
+  display: none;
 }
 
 .nav-links {
   display: flex;
-  gap: 1rem;
+  gap: var(--space-sm);
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .nav-link {
-  padding: 0.5rem 1rem;
+  padding: var(--space-sm) var(--space-md);
   border-radius: 0.5rem;
   color: var(--color-text-muted);
   text-decoration: none;
   font-weight: 500;
-  font-size: 0.875rem;
+  font-size: var(--font-size-xs);
   transition: all 0.2s;
+  flex: 1;
+  text-align: center;
+  min-width: 80px;
 }
 
 .nav-link:hover {
@@ -124,24 +131,61 @@ h1 {
   color: white;
 }
 
-@media (max-width: 1024px) {
+/* sm: 480px+ */
+@media (min-width: 480px) {
   .header-content {
-    flex-direction: column;
-    align-items: stretch;
+    gap: var(--space-lg);
   }
-}
 
-@media (max-width: 768px) {
   h1 {
-    font-size: 1.5rem;
+    font-size: var(--font-size-2xl);
   }
 
   .volleyball-icon {
-    font-size: 2rem;
+    font-size: 2.5rem;
   }
 
+  .subtitle {
+    display: block;
+  }
+
+  .nav-link {
+    font-size: var(--font-size-sm);
+    flex: none;
+  }
+}
+
+/* lg: 1024px+ - Horizontal layout */
+@media (min-width: 1024px) {
   .header-content {
-    padding: 1rem;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    gap: 2rem;
+  }
+
+  .logo-section {
+    justify-content: flex-start;
+    gap: 1rem;
+  }
+
+  .volleyball-icon {
+    font-size: 3rem;
+  }
+
+  h1 {
+    font-size: 1.875rem;
+  }
+
+  .nav-links {
+    gap: 1rem;
+    justify-content: flex-end;
+  }
+
+  .nav-link {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
   }
 }
 </style>

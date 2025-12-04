@@ -220,4 +220,88 @@ function displayTeamName(team: string): string {
   color: var(--color-text-muted);
   font-family: 'Courier New', monospace;
 }
+
+/* Mobile-first responsive styles */
+
+/* Compact variant - mobile */
+.match-teams-compact {
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.match-teams-compact .vs {
+  display: none;
+}
+
+.match-teams-compact .team {
+  font-size: var(--font-size-xs);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Full variant - mobile */
+.match-teams {
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.match-teams .vs {
+  display: none;
+}
+
+.match-teams .team {
+  padding: var(--space-sm) var(--space-md);
+}
+
+.match-teams .team-name {
+  font-size: var(--font-size-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 70%;
+}
+
+.match-teams .score {
+  font-size: var(--font-size-xl);
+}
+
+/* sm: 480px+ - Restore horizontal layout */
+@media (min-width: 480px) {
+  .match-teams-compact {
+    flex-direction: row;
+    gap: 0.75rem;
+  }
+
+  .match-teams-compact .vs {
+    display: block;
+  }
+
+  .match-teams-compact .team {
+    font-size: 0.875rem;
+  }
+
+  .match-teams {
+    flex-direction: row;
+    gap: 1rem;
+  }
+
+  .match-teams .vs {
+    display: block;
+  }
+
+  .match-teams .team {
+    padding: 1rem;
+  }
+
+  .match-teams .team-name {
+    font-size: 1rem;
+    max-width: none;
+    white-space: normal;
+  }
+
+  .match-teams .score {
+    font-size: 1.5rem;
+  }
+}
 </style>

@@ -57,11 +57,12 @@ const limitedUpcomingMatches = computed(() => {
 </template>
 
 <style scoped>
+/* Mobile-first base styles */
 .compact-view {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  padding: 1.5rem;
+  padding: var(--space-md);
   background: var(--color-background);
   display: flex;
   flex-direction: column;
@@ -73,13 +74,14 @@ const limitedUpcomingMatches = computed(() => {
   align-items: center;
   justify-content: center;
   flex: 1;
-  gap: 1rem;
+  gap: var(--space-md);
 }
 
 .compact-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
+  gap: var(--space-md);
   flex: 1;
   min-height: 0;
   overflow: hidden;
@@ -88,18 +90,22 @@ const limitedUpcomingMatches = computed(() => {
 .standings-panel,
 .matches-panel {
   background: var(--color-surface);
-  border-radius: 1rem;
-  padding: 1.5rem;
+  border-radius: 0.75rem;
+  padding: var(--space-md);
   box-shadow: var(--shadow-lg);
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
+.standings-panel {
+  max-height: 40vh;
+}
+
 .panel-title {
-  font-size: 1.25rem;
+  font-size: var(--font-size-lg);
   font-weight: 700;
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-sm);
   color: var(--color-text);
   flex-shrink: 0;
 }
@@ -117,25 +123,61 @@ const limitedUpcomingMatches = computed(() => {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--space-sm);
   margin: -0.5rem;
   padding: 0.5rem;
 }
 
 .empty-state {
   text-align: center;
-  padding: 2rem;
+  padding: var(--space-lg);
   color: var(--color-text-muted);
 }
 
-@media (max-width: 1024px) {
+/* sm: 480px+ */
+@media (min-width: 480px) {
+  .compact-view {
+    padding: var(--space-lg);
+  }
+
   .compact-grid {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
+    gap: var(--space-lg);
   }
 
   .standings-panel {
-    max-height: 40vh;
+    max-height: 45vh;
+  }
+
+  .matches-compact {
+    gap: var(--space-md);
+  }
+}
+
+/* lg: 1024px+ - Two column layout */
+@media (min-width: 1024px) {
+  .compact-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+    gap: 1.5rem;
+  }
+
+  .standings-panel,
+  .matches-panel {
+    padding: 1.5rem;
+    border-radius: 1rem;
+  }
+
+  .standings-panel {
+    max-height: none;
+  }
+
+  .panel-title {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .matches-compact {
+    gap: 1rem;
   }
 }
 </style>

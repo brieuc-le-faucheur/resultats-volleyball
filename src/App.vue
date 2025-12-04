@@ -41,6 +41,21 @@ const isCompactView = computed(() => route.name === 'compact')
   --color-draw: #f59e0b;
   --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+
+  /* Spacing scale */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+
+  /* Typography scale */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
 }
 
 /* Thème LIGHT */
@@ -84,7 +99,7 @@ body {
   flex: 1;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: var(--space-md);
   width: 100%;
 }
 
@@ -124,9 +139,9 @@ body {
   }
 }
 
-@media (max-width: 768px) {
+@media (min-width: 768px) {
   .app-main {
-    padding: 1rem;
+    padding: var(--space-xl);
   }
 }
 </style>

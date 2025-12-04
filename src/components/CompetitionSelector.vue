@@ -128,22 +128,23 @@ function handlePoolChange(event: Event): void {
 </template>
 
 <style scoped>
+/* Mobile-first base styles */
 .competition-selector {
   display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  align-items: flex-end;
+  flex-direction: column;
+  gap: var(--space-md);
+  align-items: stretch;
 }
 
 .selector-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  min-width: 200px;
+  gap: var(--space-sm);
+  width: 100%;
 }
 
 label {
-  font-size: 0.875rem;
+  font-size: var(--font-size-xs);
   font-weight: 600;
   color: var(--color-text);
   text-transform: uppercase;
@@ -151,15 +152,16 @@ label {
 }
 
 .selector {
-  padding: 0.75rem 1rem;
+  padding: var(--space-sm) var(--space-md);
   border-radius: 0.5rem;
   border: 1px solid var(--color-border);
   background: var(--color-surface);
   color: var(--color-text);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
+  width: 100%;
 }
 
 .selector:hover {
@@ -178,14 +180,27 @@ label {
   cursor: not-allowed;
 }
 
-@media (max-width: 768px) {
+/* md: 768px+ - Horizontal layout */
+@media (min-width: 768px) {
   .competition-selector {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 1rem;
   }
 
   .selector-group {
-    min-width: 100%;
+    min-width: 200px;
+    width: auto;
+  }
+
+  label {
+    font-size: 0.875rem;
+  }
+
+  .selector {
+    padding: 0.75rem 1rem;
+    width: auto;
   }
 }
 </style>

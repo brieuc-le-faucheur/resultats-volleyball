@@ -172,34 +172,34 @@ const filteredMatches = computed(() => {
   gap: 2rem;
 }
 
-/* Sections */
+/* Sections - Mobile first */
 .standings-section,
 .matches-section {
   background: var(--color-surface);
-  border-radius: 1rem;
-  padding: 2rem;
+  border-radius: 0.75rem;
+  padding: var(--space-md);
   box-shadow: var(--shadow-lg);
 }
 
 .section-title {
-  font-size: 1.5rem;
+  font-size: var(--font-size-lg);
   font-weight: 700;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-md);
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--space-sm);
   color: var(--color-text);
 }
 
 .title-icon {
-  font-size: 1.75rem;
+  font-size: var(--font-size-xl);
 }
 
-/* Team Stats */
+/* Team Stats - Mobile first */
 .team-stats-section {
   background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
-  border-radius: 1rem;
-  padding: 2rem;
+  border-radius: 0.75rem;
+  padding: var(--space-md);
   box-shadow: var(--shadow-lg);
 }
 
@@ -238,28 +238,28 @@ const filteredMatches = computed(() => {
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-sm);
 }
 
 .stat-card {
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(10px);
   border-radius: 0.75rem;
-  padding: 1.5rem;
+  padding: var(--space-md);
   text-align: center;
 }
 
 .stat-value {
-  font-size: 2rem;
+  font-size: var(--font-size-xl);
   font-weight: 700;
   color: white;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--space-xs);
 }
 
 .stat-label {
   color: rgba(255, 255, 255, 0.9);
-  font-size: 0.875rem;
+  font-size: var(--font-size-xs);
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -279,15 +279,15 @@ const filteredMatches = computed(() => {
   background: var(--color-primary);
   color: white;
   border: none;
-  padding: 0.75rem 1.5rem;
+  padding: var(--space-sm) var(--space-md);
   border-radius: 0.5rem;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-sm);
   transition: all 0.2s;
-  font-size: 0.875rem;
+  font-size: var(--font-size-xs);
 }
 
 .sort-button:hover {
@@ -347,24 +347,46 @@ const filteredMatches = computed(() => {
   font-size: 1.125rem;
 }
 
-@media (max-width: 768px) {
+/* md: 768px+ */
+@media (min-width: 768px) {
   .standings-section,
   .matches-section,
   .team-stats-section {
-    padding: 1.5rem;
+    padding: var(--space-xl);
+    border-radius: 1rem;
   }
 
   .section-title {
-    font-size: 1.25rem;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    gap: 0.75rem;
+  }
+
+  .title-icon {
+    font-size: 1.75rem;
   }
 
   .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
+
+  .stat-card {
+    padding: 1.5rem;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
   }
 
   .sort-button {
-    font-size: 0.75rem;
-    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    padding: 0.75rem 1.5rem;
   }
 }
 </style>
