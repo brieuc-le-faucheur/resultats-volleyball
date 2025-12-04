@@ -1,0 +1,460 @@
+{
+  "lastUpdated": "2025-12-04",
+  "competitions": [
+    {
+      "codent": "ABCCS",
+      "name": "Championnats Nationaux",
+      "category": "National"
+    },
+    {
+      "codent": "LIRA",
+      "name": "Auvergne-Rhône-Alpes",
+      "category": "Régional"
+    },
+    {
+      "codent": "LIBOUR",
+      "name": "Bourgogne-Franche-Comté",
+      "category": "Régional"
+    },
+    {
+      "codent": "LIBR",
+      "name": "Bretagne",
+      "category": "Régional"
+    },
+    {
+      "codent": "LICE",
+      "name": "Centre-Val de Loire",
+      "category": "Régional"
+    },
+    {
+      "codent": "LICO",
+      "name": "Corse",
+      "category": "Régional"
+    },
+    {
+      "codent": "LILO",
+      "name": "Grand Est",
+      "category": "Régional"
+    },
+    {
+      "codent": "LIGU",
+      "name": "Grand Est (ex-Alsace)",
+      "category": "Régional"
+    },
+    {
+      "codent": "LIGY",
+      "name": "Grand Est (ex-Champagne)",
+      "category": "Régional"
+    },
+    {
+      "codent": "LIFL",
+      "name": "Hauts-de-France",
+      "category": "Régional"
+    },
+    {
+      "codent": "LIIDF",
+      "name": "Île-de-France",
+      "category": "Régional"
+    },
+    {
+      "codent": "LIRE",
+      "name": "La Réunion",
+      "category": "Régional"
+    },
+    {
+      "codent": "LIMART",
+      "name": "Martinique",
+      "category": "Régional"
+    },
+    {
+      "codent": "LIMY",
+      "name": "Mayotte",
+      "category": "Régional"
+    },
+    {
+      "codent": "LILBNV",
+      "name": "Normandie",
+      "category": "Régional"
+    },
+    {
+      "codent": "LIAQ",
+      "name": "Nouvelle-Aquitaine",
+      "category": "Régional"
+    },
+    {
+      "codent": "LILR",
+      "name": "Occitanie",
+      "category": "Régional"
+    },
+    {
+      "codent": "LIPL",
+      "name": "Pays de la Loire",
+      "category": "Régional"
+    },
+    {
+      "codent": "LICA",
+      "name": "Provence-Alpes-Côte d'Azur",
+      "category": "Régional"
+    },
+    {
+      "codent": "PTRA01",
+      "name": "01 Ain",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTPI02",
+      "name": "02 Aisne",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTPR04",
+      "name": "04/05 Alpes-Hte Provence/ Hautes-Alpes",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTCA06",
+      "name": "06 Alpes-Maritimes",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTRA26",
+      "name": "07/26 Drôme-Ardèche",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTLR11",
+      "name": "11 Aude",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTPR13",
+      "name": "13 Bouches-du-Rhône",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTLB14",
+      "name": "14 Calvados",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTAU15",
+      "name": "15 Cantal",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTPO16",
+      "name": "16 Charente",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTPO17",
+      "name": "17 Charente-Maritime",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTBO21",
+      "name": "21 Côte-d'Or",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTBR22",
+      "name": "22 Côtes d'Armor",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTAQ24",
+      "name": "24 Dordogne",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTLH27",
+      "name": "27 Eure",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTCE28",
+      "name": "28 Eure-et-Loir",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTBR29",
+      "name": "29 Finistère",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTLR30",
+      "name": "30 Gard",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTMP31",
+      "name": "31 Haute-Garonne",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTAQ33",
+      "name": "33 Gironde",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTLR34",
+      "name": "34 Hérault",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTBR35",
+      "name": "35 Ille-et-Vilaine",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTCE37",
+      "name": "37 Indre-et-Loire",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTRA38",
+      "name": "38 Isère",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTAQ40",
+      "name": "40 Landes",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTRA42",
+      "name": "42 Loire",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTAU43",
+      "name": "43 Haute Loire",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTPL44",
+      "name": "44 Loire-Atlantique",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTCE45",
+      "name": "45 Loiret",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTPL49",
+      "name": "49  Maine-et-Loire",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTLB50",
+      "name": "50 Manche",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTLO52",
+      "name": "52 Haute-Marne",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTPL53",
+      "name": "53 Mayenne",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTLO54",
+      "name": "54 Meurthe-et-Moselle",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTBR56",
+      "name": "56 Morbihan",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTLO57",
+      "name": "57 Moselle",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTFL59",
+      "name": "59 Nord",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTPI60",
+      "name": "60 Oise",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTFL62",
+      "name": "62 Pas-de-Calais",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTAU63",
+      "name": "63 Puy de Dôme",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTAQ64",
+      "name": "64 Pyrénées-Atlantiques",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTMP65",
+      "name": "65 Hautes-Pyrénées",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTLR66",
+      "name": "66 Pyrénées-Orientales",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTAL67",
+      "name": "67 Bas Rhin",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTAL68",
+      "name": "68 Haut Rhin",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTRA69",
+      "name": "69 Rhône Métropole de Lyon",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTBO71",
+      "name": "71 Saône-et-Loire",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTPL72",
+      "name": "72 Sarthe",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTIDF75",
+      "name": "75 Seine Paris",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTLH76",
+      "name": "76 Seine-Maritime",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTIDF77",
+      "name": "77 Seine-et-Marne",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTIDF78",
+      "name": "78 Yvelines",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTPO79",
+      "name": "79 Deux-Sèvres",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTPI80",
+      "name": "80 Somme",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTMP81",
+      "name": "81 Tarn",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTMP82",
+      "name": "82 Tarn-et-Garonne",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTCA83",
+      "name": "83 Var",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTPR84",
+      "name": "84 Vaucluse",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTPL85",
+      "name": "85 Vendée",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTPO86",
+      "name": "86 Vienne",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTLO88",
+      "name": "88 Vosges",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTBO89",
+      "name": "89 Yonne",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTIDF91",
+      "name": "91 Essonne",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTIDF92",
+      "name": "92 Hauts-de-Seine",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTIDF93",
+      "name": "93 Seine-St-Denis",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTIDF94",
+      "name": "94 Val de Marne",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTIDF95",
+      "name": "95 Val d'Oise",
+      "category": "Départemental"
+    },
+    {
+      "codent": "LIGU",
+      "name": "Grand Est (ex-Alsace)",
+      "category": "Départemental"
+    },
+    {
+      "codent": "LIGY",
+      "name": "Grand Est (ex-Champagne)",
+      "category": "Départemental"
+    },
+    {
+      "codent": "LIRE",
+      "name": "La Réunion",
+      "category": "Départemental"
+    },
+    {
+      "codent": "LIMART",
+      "name": "Martinique",
+      "category": "Départemental"
+    },
+    {
+      "codent": "LIMY",
+      "name": "Mayotte",
+      "category": "Départemental"
+    }
+  ]
+}
