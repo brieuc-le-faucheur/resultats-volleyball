@@ -4,7 +4,7 @@ import { useCompetitionSelector } from '../composables/useCompetitionSelector'
 import type { Pool } from '../config'
 
 const {
-  competitions,
+  competitionsByCategory,
   selectedCompetitionId,
   selectedSaison,
   selectedPoolCode,
@@ -57,6 +57,13 @@ computed(() => {
 // Computed pour l'ID de compétition combiné (pour le select)
 const selectedCompetitionKey = computed(() => `${selectedCompetitionId.value}|${selectedSaison.value}`)
 
+// Nombre total de compétitions
+const totalCompetitions = computed(() => {
+  let count = 0
+  competitionsByCategory.value.forEach(comps => count += comps.length)
+  return count
+})
+
 function handleCompetitionChange(event: Event): void {
   const target = event.target as HTMLSelectElement
   const [competitionId, saison] = target.value.split('|')
@@ -75,7 +82,7 @@ function handlePoolChange(event: Event): void {
 <template>
   <div class="competition-selector">
     <!-- Masquer le dropdown de compétition si une seule option -->
-    <div v-if="competitions.length > 1" class="selector-group">
+    <div v-if="totalCompetitions > 1" class="selector-group">
       <label for="competition-select">Compétition</label>
       <select
         id="competition-select"
@@ -83,13 +90,19 @@ function handlePoolChange(event: Event): void {
         @change="handleCompetitionChange"
         class="selector"
       >
-        <option
-          v-for="comp in competitions"
-          :key="`${comp.id}|${comp.saison}`"
-          :value="`${comp.id}|${comp.saison}`"
+        <optgroup
+          v-for="[category, comps] in competitionsByCategory"
+          :key="category"
+          :label="category"
         >
-          {{ comp.name }} {{ comp.saison }}
-        </option>
+          <option
+            v-for="comp in comps"
+            :key="`${comp.id}|${comp.saison}`"
+            :value="`${comp.id}|${comp.saison}`"
+          >
+            {{ comp.name }}
+          </option>
+        </optgroup>
       </select>
     </div>
 

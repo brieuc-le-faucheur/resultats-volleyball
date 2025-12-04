@@ -5,6 +5,7 @@ import { loadPoolsForCompetition } from '../services/poolLoader'
 
 export interface UseCompetitionSelectorReturn {
   competitions: Ref<Competition[]>
+  competitionsByCategory: Ref<Map<string, Competition[]>>
   selectedCompetitionId: Ref<string>
   selectedSaison: Ref<string>
   selectedPoolCode: Ref<string>
@@ -52,6 +53,35 @@ function createCompetitionSelector(): UseCompetitionSelectorReturn {
   const loadedPools = ref<Map<string, Pool[]>>(new Map())
 
   // Computed
+  const competitionsByCategory = computed(() => {
+    const groups = new Map<string, Competition[]>()
+    const categoryOrder = ['Régional', 'Départemental', 'National', 'Coupe de France']
+
+    competitions.value.forEach(comp => {
+      const category = comp.category || 'Autres'
+      if (!groups.has(category)) {
+        groups.set(category, [])
+      }
+      groups.get(category)!.push(comp)
+    })
+
+    // Trier les catégories selon l'ordre défini
+    const sorted = new Map<string, Competition[]>()
+    categoryOrder.forEach(cat => {
+      if (groups.has(cat)) {
+        sorted.set(cat, groups.get(cat)!)
+      }
+    })
+    // Ajouter les catégories non listées
+    groups.forEach((comps, cat) => {
+      if (!sorted.has(cat)) {
+        sorted.set(cat, comps)
+      }
+    })
+
+    return sorted
+  })
+
   const selectedCompetition = computed(() => {
     return competitions.value.find(
       c => c.id === selectedCompetitionId.value && c.saison === selectedSaison.value
@@ -154,6 +184,7 @@ function createCompetitionSelector(): UseCompetitionSelectorReturn {
 
   return {
     competitions,
+    competitionsByCategory,
     selectedCompetitionId,
     selectedSaison,
     selectedPoolCode,
