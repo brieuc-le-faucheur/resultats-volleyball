@@ -139,9 +139,13 @@ export function useFFVBData(): UseFFVBDataReturn {
         }
       })
 
-      // Sauvegarder dans le cache
-      saveToCache(matches.value, standings.value)
-      console.log('Données sauvegardées dans le cache')
+      // Sauvegarder dans le cache seulement si le classement n'est pas vide
+      if (standings.value.length > 0) {
+        saveToCache(matches.value, standings.value)
+        console.log('Données sauvegardées dans le cache')
+      } else {
+        console.log('Classement vide, données non mises en cache')
+      }
     } catch (err) {
       console.error('Erreur lors du chargement des données FFVB:', err)
       error.value = err instanceof Error ? err : new Error('Unknown error')
