@@ -9,7 +9,7 @@ import StandingsTable from './StandingsTable.vue'
 import MatchCard from './MatchCard.vue'
 import FavoriteButton from './FavoriteButton.vue'
 
-const { matches, standings, loading } = useFFVBData()
+const { matches, standings, loading, error, reload } = useFFVBData()
 const {
   selectedCompetitionId,
   selectedSaison,
@@ -101,6 +101,13 @@ onUnmounted(() => {
     <div v-if="loading" class="loading-state">
       <div class="spinner"></div>
       <p>Chargement des données...</p>
+    </div>
+
+    <div v-else-if="error" class="error-state">
+      <div class="error-icon">⚠️</div>
+      <p class="error-message">Impossible de charger les données</p>
+      <p class="error-details">{{ error.message }}</p>
+      <button @click="reload" class="retry-btn">Réessayer</button>
     </div>
 
     <div v-else class="dashboard-content">
@@ -267,13 +274,58 @@ onUnmounted(() => {
   max-width: 100%;
 }
 
-.loading-state {
+.loading-state,
+.error-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 400px;
   gap: 1rem;
+}
+
+.error-state {
+  background: var(--color-surface);
+  border-radius: 0.75rem;
+  padding: var(--space-xl);
+  text-align: center;
+}
+
+.error-icon {
+  font-size: 3rem;
+}
+
+.error-message {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.error-details {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+  max-width: 400px;
+  word-break: break-word;
+}
+
+.retry-btn {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: var(--space-md);
+}
+
+.retry-btn:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
 }
 
 .dashboard-content {

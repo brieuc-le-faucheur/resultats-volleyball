@@ -114,6 +114,10 @@ export function useFFVBData(): UseFFVBDataReturn {
     loading.value = true
     error.value = null
 
+    // Réinitialiser les données pour ne pas afficher les anciennes en cas d'erreur
+    matches.value = []
+    standings.value = []
+
     // Essayer de charger depuis le cache d'abord
     const cached = loadFromCache()
     if (cached) {
