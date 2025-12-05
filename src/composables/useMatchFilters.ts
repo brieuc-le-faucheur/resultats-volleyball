@@ -20,7 +20,7 @@ export interface UseMatchFiltersReturn {
 
 export function useMatchFilters(matches: Ref<Match[]>): UseMatchFiltersReturn {
   const selectedTeam = ref<string | null>(null)
-  const sortOrder = ref<'asc' | 'desc'>('desc')
+  const sortOrder = ref<'asc' | 'desc'>('asc')
 
   const filteredMatches = computed(() => {
     if (!selectedTeam.value) return matches.value
