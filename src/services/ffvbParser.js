@@ -115,22 +115,31 @@ export function parseMatches(html) {
   let currentJournee = ''
 
   // Find all table rows
-  const allRows = doc.querySelectorAll('TABLE[CELLSPACING="0"] tr')
+  const allRows = doc.querySelectorAll('table tr')
 
   // Helper to safely get cell text content
   const getCellText = (cells, index) => cells[index]?.textContent?.trim() || ''
 
+  // Helper to parse score (0 is valid, empty string is null)
+  const parseScore = (text) => {
+    const trimmed = (text || '').trim()
+    if (trimmed === '') return null
+    const num = parseInt(trimmed)
+    return isNaN(num) ? null : num
+  }
+
   Array.from(allRows).forEach(row => {
     try {
-      // Check if this is a journée header row
-      const journeeHeader = row.querySelector("td[background='../images/bkrg.gif'].lienblanc_pt[colspan='12']")
-      if (journeeHeader) {
+      // Check if this is a journée header row (multiple possible selectors)
+      const journeeHeader = row.querySelector("td[background*='bkrg.gif']") ||
+                           row.querySelector("td.lienblanc_pt[colspan]")
+      if (journeeHeader && journeeHeader.textContent?.includes('Jour')) {
         currentJournee = journeeHeader.textContent?.trim() || ''
         return
       }
 
-      // Check if this is a match row (has onMouseOver)
-      if (!row.getAttribute('onMouseOver')) return
+      // Check if this is a match row (has onMouseOver attribute, case-insensitive)
+      if (!row.getAttribute('onMouseOver') && !row.getAttribute('onmouseover')) return
 
       const cells = row.querySelectorAll('td')
       if (cells.length < 6) return
@@ -156,8 +165,8 @@ export function parseMatches(html) {
       // A match is played if the score cells have background color
       if (homeScoreCell?.getAttribute('bgcolor')) {
         played = true
-        homeScore = parseInt(getCellText(cells, 6)) || null
-        awayScore = parseInt(getCellText(cells, 7)) || null
+        homeScore = parseScore(getCellText(cells, 6))
+        awayScore = parseScore(getCellText(cells, 7))
         setScores = getCellText(cells, 8)
       }
 
