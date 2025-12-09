@@ -4,10 +4,17 @@ import { config } from '../config'
 interface PoolsData {
   pools: Pool[]
   timestamp: number
+  version?: number
 }
+
+// Cache version - increment to force cache invalidation for all users
+const CACHE_VERSION = 2
 
 // Cache duration for pools: 2 months in milliseconds
 const POOLS_CACHE_DURATION = 2 * 30 * 24 * 60 * 60 * 1000
+
+// Clean old cache entries on startup
+cleanOldCache()
 
 /**
  * Load pools for a competition from FFVB website
@@ -93,6 +100,37 @@ function parsePoolsFromHTML(html: string): Pool[] {
 }
 
 /**
+ * Clean old cache entries (wrong version or old format)
+ */
+function cleanOldCache(): void {
+  try {
+    const keysToRemove: string[] = []
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (key?.startsWith('pools-')) {
+        const cached = localStorage.getItem(key)
+        if (cached) {
+          try {
+            const data: PoolsData = JSON.parse(cached)
+            if (data.version !== CACHE_VERSION) {
+              keysToRemove.push(key)
+            }
+          } catch {
+            keysToRemove.push(key)
+          }
+        }
+      }
+    }
+    keysToRemove.forEach(key => localStorage.removeItem(key))
+    if (keysToRemove.length > 0) {
+      console.log(`Cleaned ${keysToRemove.length} old cache entries`)
+    }
+  } catch (error) {
+    console.error('Error cleaning old cache:', error)
+  }
+}
+
+/**
  * Load pools from localStorage cache
  */
 function loadFromCache(key: string): Pool[] | null {
@@ -102,6 +140,12 @@ function loadFromCache(key: string): Pool[] | null {
 
     const data: PoolsData = JSON.parse(cached)
     const now = Date.now()
+
+    // Check cache version
+    if (data.version !== CACHE_VERSION) {
+      localStorage.removeItem(key)
+      return null
+    }
 
     // Check if cache is still valid (2 months)
     if (now - data.timestamp > POOLS_CACHE_DURATION) {
@@ -123,7 +167,8 @@ function saveToCache(key: string, pools: Pool[]): void {
   try {
     const data: PoolsData = {
       pools,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      version: CACHE_VERSION
     }
     localStorage.setItem(key, JSON.stringify(data))
   } catch (error) {
