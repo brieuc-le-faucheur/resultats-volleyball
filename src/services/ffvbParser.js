@@ -145,8 +145,9 @@ export function parseMatches(html) {
       if (cells.length < 6) return
 
       const matchCode = getCellText(cells, 0)
-      // Skip if not a valid match code (should have at least 4 characters)
-      if (!matchCode || matchCode.length < 4) return
+      // Skip if not a valid match code
+      // Match codes follow pattern: letters/numbers + letter + 3 digits (e.g., "3MAA001", "DMAA001")
+      if (!matchCode || !/^[A-Z0-9]+[A-Z]\d{3}$/i.test(matchCode)) return
 
       const date = getCellText(cells, 1)
       const time = getCellText(cells, 2)
