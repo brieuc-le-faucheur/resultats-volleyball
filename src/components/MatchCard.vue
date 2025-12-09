@@ -157,17 +157,6 @@ function displayTeamName(team: string): string {
 }
 
 /* Full variant */
-.match-card.variant-full {
-  background: var(--color-surface);
-}
-
-.match-card.variant-full.played {
-  border-left: 3px solid var(--color-secondary);
-}
-
-.match-card.variant-full.upcoming {
-  border-left: 3px solid var(--color-draw);
-}
 
 .match-header {
   display: flex;
@@ -205,17 +194,6 @@ function displayTeamName(team: string): string {
   border-radius: 0.5rem;
   border: 2px solid transparent;
   transition: all 0.2s;
-}
-
-.match-teams .team.winner,
-.match-teams .team.selected-win {
-  background: rgba(16, 185, 129, 0.15);
-  border-color: var(--color-win);
-}
-
-.match-teams .team.selected-loss {
-  background: rgba(239, 68, 68, 0.15);
-  border-color: var(--color-loss);
 }
 
 .match-teams .team-name {
