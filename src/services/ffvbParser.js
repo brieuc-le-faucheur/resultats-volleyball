@@ -99,6 +99,56 @@ export function parseStandings(html) {
     }
   })
 
+  // Si aucun classement trouvé, essayer d'extraire la composition de la poule
+  // Format: plusieurs équipes par ligne TR, chaque équipe = (nom, numéro 01/02/...)
+  if (standings.length === 0) {
+    const teams = []
+    Array.from(rows).forEach(row => {
+      const cells = row.querySelectorAll('td')
+      if (cells.length < 2) return
+
+      // Parcourir toutes les cellules pour trouver les paires (nom, numéro)
+      for (let i = 0; i < cells.length - 1; i++) {
+        const cellText = getCellText(cells, i)
+        const nextCellText = getCellText(cells, i + 1)
+
+        // Vérifier si c'est une paire (nom d'équipe, numéro à 2 chiffres)
+        if (cellText && /^\d{2}$/.test(nextCellText) && !/^\d/.test(cellText)) {
+          teams.push({
+            position: parseInt(nextCellText),
+            team: cellText
+          })
+        }
+      }
+    })
+
+    // Créer un classement vide pour chaque équipe
+    teams.sort((a, b) => a.position - b.position)
+    teams.forEach((t, index) => {
+      standings.push({
+        position: index + 1,
+        team: t.team,
+        points: 0,
+        played: 0,
+        won: 0,
+        lost: 0,
+        forfeits: 0,
+        wins_3_0: 0,
+        wins_3_1: 0,
+        wins_3_2: 0,
+        losses_2_3: 0,
+        losses_1_3: 0,
+        losses_0_3: 0,
+        setsFor: 0,
+        setsAgainst: 0,
+        coeffSets: 0,
+        pointsFor: 0,
+        pointsAgainst: 0,
+        coeffPoints: 0
+      })
+    })
+  }
+
   return standings
 }
 
