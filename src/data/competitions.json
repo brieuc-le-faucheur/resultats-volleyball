@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-10-01",
+  "lastUpdated": "2026-11-01",
   "competitions": [
     {
       "codent": "ABCCS",
@@ -222,6 +222,11 @@
       "category": "Départemental"
     },
     {
+      "codent": "PTCE41",
+      "name": "41 Loir-et-Cher",
+      "category": "Départemental"
+    },
+    {
       "codent": "PTRA42",
       "name": "42 Loire",
       "category": "Départemental"
@@ -334,6 +339,11 @@
     {
       "codent": "PTPL72",
       "name": "72 Sarthe",
+      "category": "Départemental"
+    },
+    {
+      "codent": "PTRA73",
+      "name": "73/74 Savoie Hte-Savoie",
       "category": "Départemental"
     },
     {
